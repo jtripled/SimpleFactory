@@ -1,5 +1,7 @@
-package com.jtripled.simplefactory.blocks;
+package com.jtripled.simplefactory.fluid;
 
+import com.jtripled.simplefactory.fluid.network.FluidMessage;
+import com.jtripled.simplefactory.SimpleFactory;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -13,20 +15,19 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.items.IItemHandler;
 
 /**
  *
  * @author jtripled
  */
-public class TankTile extends TileEntity implements IFluidHandler
+public class TileFluid extends TileEntity implements IFluidHandler
 {
     protected FluidTank tank;
-    protected TankTile baseTank;
     
-    public TankTile()
+    public TileFluid(int capacity)
     {
-        this.tank = new FluidTank(16000);
-        this.baseTank = null;
+        this.tank = new FluidTank(capacity);
     }
 
     @Override
@@ -48,10 +49,6 @@ public class TankTile extends TileEntity implements IFluidHandler
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         tank.writeToNBT(compound);
-        if (getBaseTank() == this)
-        {
-            compound.setInteger("capacity", tank.getCapacity());
-        }
         return super.writeToNBT(compound);
     }
 
@@ -59,10 +56,6 @@ public class TankTile extends TileEntity implements IFluidHandler
     public void readFromNBT(NBTTagCompound compound)
     {
         tank.readFromNBT(compound);
-        if (compound.hasKey("capacity"))
-        {
-            tank.setCapacity(compound.getInteger("capacity"));
-        }
         super.readFromNBT(compound);
     }
     
@@ -90,45 +83,70 @@ public class TankTile extends TileEntity implements IFluidHandler
         readFromNBT(compound);
     }
     
-    public TankTile getBaseTank()
+    public boolean hasBucketSlot()
     {
-        if (baseTank == null)
-        {
-            BlockPos next = pos;
-            TileEntity test = world.getTileEntity(next);
-            TankTile base = null;
-            while (test != null && test instanceof TankTile && next.getY() >= 0)
-            {
-                base = (TankTile) test;
-                next = next.down();
-                test = world.getTileEntity(next);
-            }
-            baseTank = base;
-        }
-        return baseTank;
+        return false;
+    }
+    
+    public IItemHandler getBucketInput()
+    {
+        return null;
+    }
+    
+    public IItemHandler getBucketOutput()
+    {
+        return null;
+    }
+    
+    public FluidTank getInternalTank()
+    {
+        return tank;
+    }
+    
+    public BlockPos getInternalTankPos()
+    {
+        return pos;
     }
     
     @Override
     public IFluidTankProperties[] getTankProperties()
     {
-        return getBaseTank().getTankProperties();
+        return getInternalTank().getTankProperties();
     }
 
     @Override
     public int fill(FluidStack resource, boolean doFill)
     {
-        return getBaseTank().tank.fill(resource, doFill);
+        FluidTank internalTank = getInternalTank();
+        int filled = internalTank.fill(resource, doFill);
+        if (!world.isRemote && doFill && filled > 0)
+        {
+            SimpleFactory.NETWORK.sendToAll(new FluidMessage(getInternalTankPos(), internalTank.getFluid()));
+        }
+        return filled;
     }
 
     @Override
     public FluidStack drain(FluidStack resource, boolean doDrain)
     {
-        return getBaseTank().tank.drain(resource, doDrain);
+        FluidTank internalTank = getInternalTank();
+        FluidStack drained = internalTank.drain(resource, doDrain);
+        if (!world.isRemote && doDrain && drained != null)
+        {
+            SimpleFactory.NETWORK.sendToAll(new FluidMessage(getInternalTankPos(), internalTank.getFluid()));
+        }
+        return drained;
     }
 
     @Override
     public FluidStack drain(int maxDrain, boolean doDrain)
     {
-        return getBaseTank().tank.drain(maxDrain, doDrain);
+        FluidTank internalTank = getInternalTank();
+        FluidStack drained = internalTank.drain(maxDrain, doDrain);
+        if (!world.isRemote && doDrain && drained != null)
+        {
+            SimpleFactory.NETWORK.sendToAll(new FluidMessage(getInternalTankPos(), internalTank.getFluid()));
+        }
+        return drained;
     }
 }

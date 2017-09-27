@@ -1,8 +1,7 @@
-package com.jtripled.simplefactory.blocks;
+package com.jtripled.simplefactory.fluid;
 
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.simplefactory.SimpleFactoryRegistry;
-import com.jtripled.simplefactory.SimpleFactoryRegistry.*;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -17,20 +16,15 @@ import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -40,10 +34,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author jtripled
  */
-public class PumpBlock extends Block implements BlockBase, GUIBase
+public class BlockPump extends BlockFluid
 {
     public static final String NAME = "pump";
-    public static final int GUI_ID = SimpleFactoryRegistry.nextGUIID();
     public static final PropertyDirection FACING = PropertyDirection.create("facing", (@Nullable EnumFacing face) -> face != EnumFacing.UP);
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
     
@@ -55,7 +48,7 @@ public class PumpBlock extends Block implements BlockBase, GUIBase
     
     private final ItemBlock item;
     
-    public PumpBlock()
+    public BlockPump()
     {
         super(Material.IRON);
         this.setUnlocalizedName(NAME);
@@ -158,24 +151,6 @@ public class PumpBlock extends Block implements BlockBase, GUIBase
     {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
-    
-    @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
-    {
-        if (!world.isRemote)
-        {
-            PumpTile tile = (PumpTile) world.getTileEntity(pos);
-            TextComponentString message;
-            if (tile.isEmpty())
-                message = new TextComponentString("This fluid tank is empty.");
-            else
-                message = new TextComponentString("This fluid tank contains " + tile.tank.getFluidAmount() + "mB of " + tile.tank.getFluid().getFluid().getName() + ".");
-            message.getStyle().setColor(TextFormatting.RED);
-            player.sendMessage(message);
-            openGUI(player, world, pos.getX(), pos.getY(), pos.getZ());
-        }
-        return true;
-    }
 
     @Override
     public IBlockState getStateFromMeta(int meta)
@@ -194,15 +169,9 @@ public class PumpBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public boolean hasTileEntity(IBlockState state)
+    public TileFluid createTileEntity(World world, IBlockState state)
     {
-        return true;
-    }
-    
-    @Override
-    public TileEntity createTileEntity(World world, IBlockState state)
-    {
-        return new PumpTile();
+        return new TilePump();
     }
 
     @Override
@@ -222,37 +191,13 @@ public class PumpBlock extends Block implements BlockBase, GUIBase
     {
         return new BlockStateContainer(this, new IProperty[] {FACING, ENABLED});
     }
-
-    @Override
-    public int getGUIID()
-    {
-        return GUI_ID;
-    }
-
-    @Override
-    public PumpContainer getServerGUI(EntityPlayer player, World world, int x, int y, int z)
-    {
-        return new PumpContainer((PumpTile) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
-    }
-
-    @Override
-    public PumpGUI getClientGUI(EntityPlayer player, World world, int x, int y, int z)
-    {
-        return new PumpGUI(getServerGUI(player, world, x, y, z));
-    }
-    
-    @Override
-    public void openGUI(EntityPlayer player, World world, int x, int y, int z)
-    {
-        player.openGui(SimpleFactory.INSTANCE, GUI_ID, world, x, y, z);
-    }
     
     @Override
     public void registerBlock(SimpleFactoryRegistry registry)
     {
         SimpleFactory.PROXY.registerBlockStateMap(this, (new StateMap.Builder()).ignore(ENABLED).build());
         registry.registerBlock(this);
-        registry.registerTileEntity(this, PumpTile.class);
+        registry.registerTileEntity(this, TilePump.class);
         registry.registerGUI(this);
     }
     

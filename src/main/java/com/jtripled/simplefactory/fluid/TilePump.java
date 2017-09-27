@@ -1,14 +1,11 @@
-package com.jtripled.simplefactory.blocks;
+package com.jtripled.simplefactory.fluid;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockDynamicLiquid;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -17,7 +14,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -28,19 +24,18 @@ import net.minecraftforge.items.ItemStackHandler;
  *
  * @author jtripled
  */
-public class PumpTile extends TileEntity implements ITickable
+public class TilePump extends TileFluid implements ITickable
 {
     protected final ItemStackHandler input;
     protected final ItemStackHandler output;
-    protected final FluidTank tank;
     private int transferCooldown;
     private long tickedGameTime;
     
-    public PumpTile()
+    public TilePump()
     {
+        super(Fluid.BUCKET_VOLUME * 8);
         this.input = new ItemStackHandler(1);
         this.output = new PumpInventoryHandler(this.input);
-        this.tank = new FluidTank(8000);
         this.transferCooldown = -1;
     }
 
@@ -48,7 +43,6 @@ public class PumpTile extends TileEntity implements ITickable
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
-                || capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY
                 || super.hasCapability(capability, facing);
     }
 
@@ -57,7 +51,6 @@ public class PumpTile extends TileEntity implements ITickable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T)input
-                : capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? (T)tank
                 : super.getCapability(capability, facing);
     }
 
@@ -66,7 +59,6 @@ public class PumpTile extends TileEntity implements ITickable
     {
         compound.setTag("input", input.serializeNBT());
         compound.setTag("output", output.serializeNBT());
-        tank.writeToNBT(compound);
         compound.setInteger("transferCooldown", transferCooldown);
         return super.writeToNBT(compound);
     }
@@ -76,33 +68,8 @@ public class PumpTile extends TileEntity implements ITickable
     {
         input.deserializeNBT(compound.getCompoundTag("input"));
         output.deserializeNBT(compound.getCompoundTag("output"));
-        tank.readFromNBT(compound);
         transferCooldown = compound.getInteger("transferCooldown");
         super.readFromNBT(compound);
-    }
-    
-    @Override
-    public void onDataPacket(NetworkManager network, SPacketUpdateTileEntity packet)
-    {
-        readFromNBT(packet.getNbtCompound());
-    }
-    
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        return new SPacketUpdateTileEntity(getPos(), 1, getUpdateTag());
-    }
-    
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        return writeToNBT(super.getUpdateTag());
-    }
-    
-    @Override
-    public void handleUpdateTag(NBTTagCompound compound)
-    {
-        readFromNBT(compound);
     }
     
     @Override
@@ -157,16 +124,34 @@ public class PumpTile extends TileEntity implements ITickable
         return tank.getFluidAmount() >= tank.getCapacity();
     }
     
+    @Override
+    public boolean hasBucketSlot()
+    {
+        return true;
+    }
+    
+    @Override
+    public IItemHandler getBucketInput()
+    {
+        return input;
+    }
+    
+    @Override
+    public IItemHandler getBucketOutput()
+    {
+        return output;
+    }
+    
     public boolean transferOut()
     {
-        TileEntity testTile = world.getTileEntity(pos.offset(PumpBlock.getFacing(getBlockMetadata())));
+        TileEntity testTile = world.getTileEntity(pos.offset(BlockPump.getFacing(getBlockMetadata())));
         if (testTile != null && testTile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
         {
             IFluidHandler nextInventory = testTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-            int amount = nextInventory.fill(tank.drain(400, false), false);
+            int amount = nextInventory.fill(drain(400, false), false);
             if (!isEmpty() && amount > 0)
             {
-                nextInventory.fill(tank.drain(amount, true), true);
+                nextInventory.fill(drain(amount, true), true);
                 return true;
             }
             return false;
@@ -187,7 +172,7 @@ public class PumpTile extends TileEntity implements ITickable
                 {
                     if (tank.getFluid() == null || tank.getFluid().getFluid() == fromFluid)
                     {
-                        tank.fill(new FluidStack(fromFluid, 1), true);
+                        fill(new FluidStack(fromFluid, 100), true);
                         return true;
                     }
                 }
@@ -196,7 +181,7 @@ public class PumpTile extends TileEntity implements ITickable
                     if (block.getMetaFromState(world.getBlockState(above)) == 0 && (tank.getFluid() == null || tank.getFluid().getFluid() == fromFluid))
                     {
                         world.setBlockToAir(above);
-                        tank.fill(new FluidStack(fromFluid, Fluid.BUCKET_VOLUME), true);
+                        fill(new FluidStack(fromFluid, Fluid.BUCKET_VOLUME), true);
                         return true;
                     }
                 }
@@ -210,8 +195,8 @@ public class PumpTile extends TileEntity implements ITickable
                     FluidStack drained = handler.drain(400, false);
                     if (drained != null && (tank.getFluid() == null || drained.getFluid() == tank.getFluid().getFluid()))
                     {
-                        int amount = tank.fill(drained, false);
-                        tank.fill(handler.drain(amount, true), true);
+                        int amount = fill(drained, false);
+                        fill(handler.drain(amount, true), true);
                         return true;
                     }
                 }

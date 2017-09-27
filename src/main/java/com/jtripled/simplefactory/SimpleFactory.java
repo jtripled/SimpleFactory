@@ -15,8 +15,8 @@ public class SimpleFactory
     public static final String NAME = "SimpleFactory";
     public static final String ID = "simplefactory";
     public static final String VERSION = "1.12.2";
-    public static final String COMMON_PROXY = "com.simplefactory.SimpleFactoryCommonProxy";
-    public static final String CLIENT_PROXY = "com.simplefactory.SimpleFactoryClientProxy";
+    public static final String COMMON_PROXY = "com.jtripled.simplefactory.SimpleFactoryCommonProxy";
+    public static final String CLIENT_PROXY = "com.jtripled.simplefactory.SimpleFactoryClientProxy";
     
     @Mod.Instance(SimpleFactory.ID)
     public static SimpleFactory INSTANCE;

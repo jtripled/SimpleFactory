@@ -1,6 +1,6 @@
-package com.jtripled.simplefactory.blocks;
+package com.jtripled.simplefactory.fluid;
 
-import javax.annotation.Nullable;
+import com.jtripled.simplefactory.blocks.ItemDuctBlock;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -8,8 +8,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
@@ -17,39 +16,21 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
  *
  * @author jtripled
  */
-public class FluidDuctTile extends TileEntity implements ITickable
+public class TileFluidDuct extends TileFluid implements ITickable
 {
-    protected final FluidTank tank;
     private int transferCooldown;
-    private long tickedGameTime;
     private EnumFacing previous;
     
-    public FluidDuctTile()
+    public TileFluidDuct()
     {
-        this.tank = new FluidTank(1000);
+        super(Fluid.BUCKET_VOLUME * 1);
         this.transferCooldown = -1;
         this.previous = EnumFacing.EAST;
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY
-                || super.hasCapability(capability, facing);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? (T)tank
-                : super.getCapability(capability, facing);
-    }
-
-    @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
-        tank.writeToNBT(compound);
         compound.setInteger("transferCooldown", transferCooldown);
         return super.writeToNBT(compound);
     }
@@ -57,33 +38,8 @@ public class FluidDuctTile extends TileEntity implements ITickable
     @Override
     public void readFromNBT(NBTTagCompound compound)
     {
-        tank.readFromNBT(compound);
         transferCooldown = compound.getInteger("transferCooldown");
         super.readFromNBT(compound);
-    }
-    
-    @Override
-    public void onDataPacket(NetworkManager network, SPacketUpdateTileEntity packet)
-    {
-        readFromNBT(packet.getNbtCompound());
-    }
-    
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        return new SPacketUpdateTileEntity(getPos(), 1, getUpdateTag());
-    }
-    
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        return writeToNBT(super.getUpdateTag());
-    }
-    
-    @Override
-    public void handleUpdateTag(NBTTagCompound compound)
-    {
-        readFromNBT(compound);
     }
     
     @Override
@@ -92,48 +48,19 @@ public class FluidDuctTile extends TileEntity implements ITickable
         if (world != null && !world.isRemote)
         {
             --transferCooldown;
-            tickedGameTime = world.getTotalWorldTime();
-
             if (transferCooldown <= 0)
             {
                 transferCooldown = 0;
-                doTransfer();
-            }
-        }
-    }
-    
-    public boolean doTransfer()
-    {
-        if (world != null && !world.isRemote)
-        {
-            if (transferCooldown <= 0)
-            {
                 boolean flag = false;
-                if (!this.isEmpty())
+                if (tank.getFluidAmount() > 0)
                     flag = transferOut();
                 if (flag)
                 {
                     transferCooldown = 8;
                     this.markDirty();
-                    return true;
                 }
             }
-            return false;
         }
-        else
-        {
-            return false;
-        }
-    }
-
-    public boolean isEmpty()
-    {
-        return tank.getFluidAmount() <= 0;
-    }
-
-    public boolean isFull()
-    {
-        return tank.getFluidAmount() >= 1000;
     }
     
     private static EnumFacing getNextFacing(EnumFacing previous, IBlockState state)
@@ -188,10 +115,10 @@ public class FluidDuctTile extends TileEntity implements ITickable
         {
             previous = next;
             IFluidHandler nextInventory = testTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-            int amount = nextInventory.fill(tank.drain(400, false), false);
-            if (!isEmpty() && amount > 0)
+            int amount = nextInventory.fill(drain(400, false), false);
+            if (tank.getFluidAmount() > 0 && amount > 0)
             {
-                nextInventory.fill(tank.drain(amount, true), true);
+                nextInventory.fill(drain(amount, true), true);
                 return true;
             }
             return false;

@@ -1,9 +1,7 @@
-package com.jtripled.simplefactory.blocks;
+package com.jtripled.simplefactory.fluid;
 
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.simplefactory.SimpleFactoryRegistry;
-import com.jtripled.simplefactory.SimpleFactoryRegistry.*;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -12,16 +10,12 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -30,10 +24,9 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
  *
  * @author jtripled
  */
-public class FluidDuctBlock extends Block implements BlockBase, GUIBase
+public class BlockFluidDuct extends BlockFluid
 {
     public static final String NAME = "fluid_duct";
-    public static final int GUI_ID = SimpleFactoryRegistry.nextGUIID();
     public static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(0.3125, 0.3125, 0.3125, 0.6875, 0.6875, 0.6875);
     public static final PropertyEnum<EnumFacing> FACING = PropertyEnum.<EnumFacing>create("facing", EnumFacing.class);
     public static final PropertyBool NORTH = PropertyBool.create("north");
@@ -45,7 +38,7 @@ public class FluidDuctBlock extends Block implements BlockBase, GUIBase
     
     public final ItemBlock item;
     
-    public FluidDuctBlock()
+    public BlockFluidDuct()
     {
         super(Material.IRON);
         this.setUnlocalizedName(NAME);
@@ -142,45 +135,9 @@ public class FluidDuctBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state)
+    public TileFluid createTileEntity(World world, IBlockState state)
     {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof ItemDuctTile)
-        {
-            //InventoryHelper.dropInventoryItems(world, pos, (ItemDuctTile) tile);
-            world.updateComparatorOutputLevel(pos, this);
-        }
-        super.breakBlock(world, pos, state);
-    }
-    
-    @Override
-    public boolean hasTileEntity(IBlockState state)
-    {
-        return true;
-    }
-    
-    @Override
-    public TileEntity createTileEntity(World world, IBlockState state)
-    {
-        return new FluidDuctTile();
-    }
-    
-    @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
-    {
-        if (!world.isRemote)
-        {
-            FluidDuctTile tile = (FluidDuctTile) world.getTileEntity(pos);
-            TextComponentString message;
-            if (tile.isEmpty())
-                message = new TextComponentString("This fluid tank is empty.");
-            else
-                message = new TextComponentString("This fluid tank contains " + tile.tank.getFluidAmount() + "mB of " + tile.tank.getFluid().getFluid().getName() + ".");
-            message.getStyle().setColor(TextFormatting.RED);
-            player.sendMessage(message);
-            openGUI(player, world, pos.getX(), pos.getY(), pos.getZ());
-        }
-        return true;
+        return new TileFluidDuct();
     }
     
     public boolean canConnect(IBlockState state, IBlockAccess world, BlockPos pos)
@@ -188,36 +145,12 @@ public class FluidDuctBlock extends Block implements BlockBase, GUIBase
         TileEntity tile = world.getTileEntity(pos);
         return tile != null && tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
     }
-
-    @Override
-    public int getGUIID()
-    {
-        return GUI_ID;
-    }
-
-    @Override
-    public FluidDuctContainer getServerGUI(EntityPlayer player, World world, int x, int y, int z)
-    {
-        return new FluidDuctContainer((FluidDuctTile) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
-    }
-
-    @Override
-    public FluidDuctGUI getClientGUI(EntityPlayer player, World world, int x, int y, int z)
-    {
-        return new FluidDuctGUI(getServerGUI(player, world, x, y, z));
-    }
-    
-    @Override
-    public void openGUI(EntityPlayer player, World world, int x, int y, int z)
-    {
-        player.openGui(SimpleFactory.INSTANCE, GUI_ID, world, x, y, z);
-    }
     
     @Override
     public void registerBlock(SimpleFactoryRegistry registry)
     {
         registry.registerBlock(this);
-        registry.registerTileEntity(this, FluidDuctTile.class);
+        registry.registerTileEntity(this, TileFluidDuct.class);
         registry.registerGUI(this);
     }
     

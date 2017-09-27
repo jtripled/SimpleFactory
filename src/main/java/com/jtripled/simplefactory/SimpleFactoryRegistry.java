@@ -1,10 +1,9 @@
 package com.jtripled.simplefactory;
 
-import com.jtripled.simplefactory.blocks.FluidDuctBlock;
-import com.jtripled.simplefactory.blocks.PumpBlock;
+import com.jtripled.simplefactory.fluid.*;
 import com.jtripled.simplefactory.blocks.GratedHopperBlock;
 import com.jtripled.simplefactory.blocks.ItemDuctBlock;
-import com.jtripled.simplefactory.blocks.TankBlock;
+import com.jtripled.simplefactory.fluid.network.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,13 +16,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistry;
 
 /**
@@ -37,11 +37,11 @@ public class SimpleFactoryRegistry implements IGuiHandler
      * Factory.
      */
     
-    public static final BlockBase FLUID_DUCT = new FluidDuctBlock();
+    public static final BlockBase FLUID_DUCT = new BlockFluidDuct();
     public static final BlockBase GRATED_HOPPER = new GratedHopperBlock();
     public static final BlockBase ITEM_DUCT = new ItemDuctBlock();
-    public static final BlockBase PUMP = new PumpBlock();
-    public static final BlockBase TANK = new TankBlock();
+    public static final BlockBase PUMP = new BlockPump();
+    public static final BlockBase TANK = new BlockTank();
     
     /**
      * Add blocks to registry list.
@@ -161,6 +161,11 @@ public class SimpleFactoryRegistry implements IGuiHandler
                 : null;
     }
     
+    public <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> handler, Class<REQ> message, int discriminator, Side side)
+    {
+        SimpleFactory.NETWORK.registerMessage(handler, message, discriminator, side);
+    }
+    
     /*
      * Event handlers to allow for registration.
      */
@@ -190,7 +195,8 @@ public class SimpleFactoryRegistry implements IGuiHandler
     
     public void init(FMLInitializationEvent event)
     {
-        
+        registerMessage(FluidMessageHandler.class, FluidMessage.class, 0, Side.CLIENT);
+        registerMessage(TankResizeMessageHandler.class, TankResizeMessage.class, 1, Side.CLIENT);
     }
     
     public void postInit(FMLPostInitializationEvent event)
