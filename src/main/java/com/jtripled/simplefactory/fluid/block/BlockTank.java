@@ -1,7 +1,10 @@
-package com.jtripled.simplefactory.fluid;
+package com.jtripled.simplefactory.fluid.block;
 
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.simplefactory.SimpleFactoryRegistry;
+import com.jtripled.simplefactory.fluid.render.TESRTank;
+import com.jtripled.simplefactory.fluid.tile.TileFluid;
+import com.jtripled.simplefactory.fluid.tile.TileTank;
 import com.jtripled.simplefactory.fluid.network.FluidMessage;
 import com.jtripled.simplefactory.fluid.network.TankResizeMessage;
 import net.minecraft.block.material.Material;

@@ -1,4 +1,4 @@
-package com.jtripled.simplefactory.fluid;
+package com.jtripled.simplefactory.fluid.tile;
 
 import com.jtripled.simplefactory.fluid.network.FluidMessage;
 import com.jtripled.simplefactory.SimpleFactory;
@@ -23,7 +23,7 @@ import net.minecraftforge.items.IItemHandler;
  */
 public class TileFluid extends TileEntity implements IFluidHandler
 {
-    protected FluidTank tank;
+    public FluidTank tank;
     
     public TileFluid(int capacity)
     {

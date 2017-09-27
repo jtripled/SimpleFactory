@@ -1,6 +1,6 @@
 package com.jtripled.simplefactory.fluid.inventory;
 
-import com.jtripled.simplefactory.fluid.TileFluid;
+import com.jtripled.simplefactory.fluid.tile.TileFluid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;

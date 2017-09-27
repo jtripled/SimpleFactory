@@ -1,7 +1,9 @@
-package com.jtripled.simplefactory.fluid;
+package com.jtripled.simplefactory.fluid.block;
 
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.simplefactory.SimpleFactoryRegistry;
+import com.jtripled.simplefactory.fluid.tile.TileFluid;
+import com.jtripled.simplefactory.fluid.tile.TilePump;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;

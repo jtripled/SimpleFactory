@@ -1,4 +1,4 @@
-package com.jtripled.simplefactory.fluid;
+package com.jtripled.simplefactory.fluid.block;
 
 import com.jtripled.simplefactory.fluid.inventory.GUIFluid;
 import com.jtripled.simplefactory.fluid.inventory.ContainerFluid;
@@ -6,6 +6,7 @@ import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.simplefactory.SimpleFactoryRegistry;
 import com.jtripled.simplefactory.SimpleFactoryRegistry.BlockBase;
 import com.jtripled.simplefactory.SimpleFactoryRegistry.GUIBase;
+import com.jtripled.simplefactory.fluid.tile.TileFluid;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

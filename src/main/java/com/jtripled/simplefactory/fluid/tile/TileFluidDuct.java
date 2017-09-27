@@ -1,4 +1,4 @@
-package com.jtripled.simplefactory.fluid;
+package com.jtripled.simplefactory.fluid.tile;
 
 import com.jtripled.simplefactory.blocks.ItemDuctBlock;
 import net.minecraft.block.state.IBlockState;

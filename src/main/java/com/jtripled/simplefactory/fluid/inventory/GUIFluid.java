@@ -2,7 +2,7 @@ package com.jtripled.simplefactory.fluid.inventory;
 
 import com.jtripled.simplefactory.fluid.inventory.ContainerFluid;
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.fluid.TileFluid;
+import com.jtripled.simplefactory.fluid.tile.TileFluid;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;

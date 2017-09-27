@@ -1,4 +1,4 @@
-package com.jtripled.simplefactory.fluid;
+package com.jtripled.simplefactory.fluid.tile;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -12,7 +12,7 @@ import net.minecraftforge.fluids.FluidTank;
  */
 public class TileTank extends TileFluid
 {
-    protected TileTank baseTank;
+    public TileTank baseTank;
     
     public TileTank()
     {

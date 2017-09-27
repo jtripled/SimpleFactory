@@ -1,6 +1,8 @@
 package com.jtripled.simplefactory;
 
-import com.jtripled.simplefactory.fluid.*;
+import com.jtripled.simplefactory.fluid.block.BlockTank;
+import com.jtripled.simplefactory.fluid.block.BlockPump;
+import com.jtripled.simplefactory.fluid.block.BlockFluidDuct;
 import com.jtripled.simplefactory.blocks.GratedHopperBlock;
 import com.jtripled.simplefactory.blocks.ItemDuctBlock;
 import com.jtripled.simplefactory.fluid.network.*;

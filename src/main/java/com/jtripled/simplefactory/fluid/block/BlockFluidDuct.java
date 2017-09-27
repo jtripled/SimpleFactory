@@ -1,7 +1,9 @@
-package com.jtripled.simplefactory.fluid;
+package com.jtripled.simplefactory.fluid.block;
 
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.simplefactory.SimpleFactoryRegistry;
+import com.jtripled.simplefactory.fluid.tile.TileFluid;
+import com.jtripled.simplefactory.fluid.tile.TileFluidDuct;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;

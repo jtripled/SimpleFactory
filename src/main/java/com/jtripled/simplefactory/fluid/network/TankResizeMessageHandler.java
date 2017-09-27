@@ -1,6 +1,6 @@
 package com.jtripled.simplefactory.fluid.network;
 
-import com.jtripled.simplefactory.fluid.TileTank;
+import com.jtripled.simplefactory.fluid.tile.TileTank;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;

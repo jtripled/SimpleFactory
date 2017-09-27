@@ -1,5 +1,7 @@
-package com.jtripled.simplefactory.fluid;
+package com.jtripled.simplefactory.fluid.render;
 
+import com.jtripled.simplefactory.fluid.tile.TileTank;
+import com.jtripled.simplefactory.fluid.block.BlockTank;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -33,7 +35,7 @@ public class TESRTank extends TileEntitySpecialRenderer<TileTank>
         boolean up = state.getValue(BlockTank.UP);
         boolean down = state.getValue(BlockTank.DOWN);
         boolean renderTop = fluidAmount <= 16000;
-        Fluid fluid = tile.getBaseTank().tank.getFluid().getFluid();
+        Fluid fluid = tile.getInternalTank().getFluid().getFluid();
         try
         {
             GlStateManager.pushMatrix();
