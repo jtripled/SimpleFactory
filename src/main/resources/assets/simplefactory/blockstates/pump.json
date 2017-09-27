@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "facing=down": { "model": "simplefactory:pump" },
+        "facing=north": { "model": "simplefactory:pump_side" },
+        "facing=south": { "model": "simplefactory:pump_side", "y": 180 },
+        "facing=west": { "model": "simplefactory:pump_side", "y": 270 },
+        "facing=east": { "model": "simplefactory:pump_side", "y": 90 }
+    }
+}

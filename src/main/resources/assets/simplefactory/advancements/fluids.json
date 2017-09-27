@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "simplefactory:pump",
+      "simplefactory:fluid_duct",
+      "simplefactory:tank"
+    ]
+  },
+  "criteria": {
+    "has_bucket": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:bucket"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_bucket"
+    ]
+  ]
+}

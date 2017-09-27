@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "facing=down": { "model": "simplefactory:grated_hopper" },
+        "facing=north": { "model": "simplefactory:grated_hopper_side" },
+        "facing=east": { "model": "simplefactory:grated_hopper_side", "y": 90 },
+        "facing=south": { "model": "simplefactory:grated_hopper_side", "y": 180 },
+        "facing=west": { "model": "simplefactory:grated_hopper_side", "y": 270 }
+    }
+}

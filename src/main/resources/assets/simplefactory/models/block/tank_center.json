@@ -1,0 +1,41 @@
+{
+    "textures": {
+        "particle": "blocks/iron_block",
+        "iron": "blocks/iron_block",
+        "tank": "simplefactory:block/fluid_tank_center"
+    },
+    "elements": [
+        {
+            "from": [ 0, 0, 15.99 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "north": { "texture": "#tank" },
+                "south": { "texture": "#tank" }
+            }
+        },
+        {
+            "from": [ 0, 0, 0 ],
+            "to": [ 16, 16, 0.01 ],
+            "faces": {
+                "north": { "texture": "#tank" },
+                "south": { "texture": "#tank" }
+            }
+        },
+        {
+            "from": [ 15.99, 0, 0 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "west":  { "texture": "#tank" },
+                "east":  { "texture": "#tank" }
+            }
+        },
+        {
+            "from": [ 0, 0, 0 ],
+            "to": [ 0.01, 16, 16 ],
+            "faces": {
+                "west":  { "texture": "#tank" },
+                "east":  { "texture": "#tank" }
+            }
+        }
+    ]
+}

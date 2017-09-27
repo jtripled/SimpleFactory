@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "simplefactory:block/fluid_tank"
+    }
+}

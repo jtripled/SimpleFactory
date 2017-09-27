@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "simplefactory",
+  "name": "Simple Factory",
+  "description": "A Minecraft Forge mod that attempts to create various factory-based blocks and items that integrate well the design of Vanilla Minecraft.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["jtripled"],
+  "credits": "Me, and only me.",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

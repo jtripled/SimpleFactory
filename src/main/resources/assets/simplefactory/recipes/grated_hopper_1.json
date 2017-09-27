@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "grated_hopper",
+  "pattern": [
+    "#!#",
+    "#@#",
+    " # "
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:iron_ingot"
+    },
+    "!": {
+      "item": "minecraft:iron_bars"
+    },
+    "@": {
+      "item": "minecraft:chest"
+    }
+  },
+  "result": {
+    "item": "simplefactory:grated_hopper",
+    "count": 1
+  }
+}
