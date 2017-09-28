@@ -3,6 +3,7 @@ package com.jtripled.simplefactory.blocks;
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.gui.GUIBase;
+import com.jtripled.voxen.item.ItemBlockBase;
 import com.jtripled.voxen.registry.RegistrationHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -14,7 +15,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -42,7 +42,7 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
     public static final PropertyBool UP = PropertyBool.create("up");
     public static final PropertyBool DOWN = PropertyBool.create("down");
     
-    private final ItemBlock item;
+    private final ItemBlockBase item;
     
     public ItemDuctBlock()
     {
@@ -51,7 +51,7 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
         this.setRegistryName(new ResourceLocation(SimpleFactory.ID, NAME));
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false).withProperty(UP, false).withProperty(DOWN, false));
-        this.item = new ItemBlock(this);
+        this.item = new ItemBlockBase(this);
         this.item.setUnlocalizedName(this.getUnlocalizedName());
         this.item.setRegistryName(this.getRegistryName());
     }

@@ -61,7 +61,7 @@ public interface BlockBase
     public default void registerItem(RegistrationHandler registry)
     {
         if (getItem() != null)
-            registry.registerItem((Item) getItem());
+            registry.registerItem(getItem());
     }
 
     public default void registerRenderer(RegistrationHandler registry)

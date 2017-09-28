@@ -1,10 +1,9 @@
 package com.jtripled.simplefactory.blocks;
 
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.SimpleFactoryRegistry;
-import com.jtripled.simplefactory.SimpleFactoryRegistry.*;
 import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.gui.GUIBase;
+import com.jtripled.voxen.item.ItemBlockBase;
 import com.jtripled.voxen.mod.VoxenConfig;
 import com.jtripled.voxen.registry.RegistrationHandler;
 import java.util.List;
@@ -22,7 +21,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
@@ -55,7 +53,7 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
     protected static final AxisAlignedBB WEST_AABB = new AxisAlignedBB(0.875D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
     protected static final AxisAlignedBB EAST_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.125D, 1.0D, 1.0D);
     
-    private final ItemBlock item;
+    private final ItemBlockBase item;
     
     public GratedHopperBlock()
     {
@@ -64,7 +62,7 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
         this.setRegistryName(new ResourceLocation(VoxenConfig.ID, NAME));
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, true));
-        this.item = new ItemBlock(this);
+        this.item = new ItemBlockBase(this);
         this.item.setUnlocalizedName(this.getUnlocalizedName());
         this.item.setRegistryName(this.getRegistryName());
     }

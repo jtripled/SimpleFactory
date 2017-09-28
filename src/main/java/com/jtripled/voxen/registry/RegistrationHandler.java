@@ -1,6 +1,7 @@
 package com.jtripled.voxen.registry;
 
 import com.jtripled.voxen.block.BlockBase;
+import com.jtripled.voxen.entity.EntityBase;
 import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBase;
 import com.jtripled.voxen.mod.VoxenMod;
@@ -12,10 +13,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -36,6 +39,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 public class RegistrationHandler implements IGuiHandler
 {
     private final List<BlockBase> BLOCKS = new ArrayList<>();
+    private final List<ItemBase> ITEMS = new ArrayList<>();
+    private final List<EntityBase> ENTITIES = new ArrayList<>();
     private IForgeRegistry<Block> blockRegistry;
     private IForgeRegistry<Item> itemRegistry;
     private IForgeRegistry<EntityEntry> entityRegistry;
@@ -43,6 +48,16 @@ public class RegistrationHandler implements IGuiHandler
     protected void addBlock(BlockBase block)
     {
         BLOCKS.add(block);
+    }
+    
+    protected void addItem(ItemBase item)
+    {
+        ITEMS.add(item);
+    }
+    
+    protected void addEntity(EntityBase entity)
+    {
+        ENTITIES.add(entity);
     }
     
     /*
@@ -64,27 +79,37 @@ public class RegistrationHandler implements IGuiHandler
         VoxenMod.PROXY.registerBlockStateMap(block, (new StateMap.Builder()).ignore(properties).build());
     }
     
+    public void registerTileRenderer(BlockBase block, TileEntitySpecialRenderer tesr)
+    {
+        VoxenMod.PROXY.registerTileRenderer(block.getTileClass(), tesr);
+    }
+    
     /*
      * Item registration hooks.
      */
     
-    public void registerItem(Item item)
+    public void registerItem(ItemBase item)
     {
-        itemRegistry.register(item);
+        itemRegistry.register((Item) item);
     }
-    
-    /*
-     * Renderer registration hooks.
-     */
     
     public void registerItemRenderer(ItemBase item, String name)
     {
         VoxenMod.PROXY.registerItemRenderer(item, name);
     }
     
-    public void registerTileRenderer(BlockBase block, TileEntitySpecialRenderer tesr)
+    /*
+     * Entity registration hooks.
+     */
+    
+    public void registerEntity(EntityEntry entry)
     {
-        VoxenMod.PROXY.registerTileRenderer(block.getTileClass(), tesr);
+        entityRegistry.register(entry);
+    }
+    
+    public void registerEntityRenderer(Class<? extends Entity> entityClass, IRenderFactory renderFactory)
+    {
+        VoxenMod.PROXY.registerEntityRenderer(entityClass, renderFactory);
     }
     
     /*
@@ -152,22 +177,24 @@ public class RegistrationHandler implements IGuiHandler
     {
         blockRegistry = registry;
         VoxenMod.REGISTRY.onRegisterBlocks(this);
-        for (BlockBase block : BLOCKS)
-            block.registerBlock(this);
+        BLOCKS.forEach((block) -> { block.registerBlock(this); });
         blockRegistry = null;
     }
     
     public void onRegisterItems(IForgeRegistry<Item> registry)
     {
         itemRegistry = registry;
-        for (BlockBase block : BLOCKS)
-            block.registerItem(this);
+        VoxenMod.REGISTRY.onRegisterItems(this);
+        BLOCKS.forEach((block) -> { block.registerItem(this); });
+        ITEMS.forEach((item) -> { item.registerItem(this); });
         itemRegistry = null;
     }
     
     public void onRegisterEntities(IForgeRegistry<EntityEntry> registry)
     {
         entityRegistry = registry;
+        VoxenMod.REGISTRY.onRegisterEntities(this);
+        ENTITIES.forEach((entity) -> { entity.registerEntity(this); });
         entityRegistry = null;
     }
     
