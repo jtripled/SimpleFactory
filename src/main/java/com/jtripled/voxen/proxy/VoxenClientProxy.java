@@ -1,6 +1,8 @@
-package com.jtripled.simplefactory;
+package com.jtripled.voxen.proxy;
 
-import com.jtripled.simplefactory.SimpleFactoryRegistry.BlockBase;
+import com.jtripled.voxen.block.BlockBase;
+import com.jtripled.voxen.item.ItemBase;
+import com.jtripled.voxen.mod.VoxenMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
@@ -15,46 +17,47 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
+
 /**
  *
  * @author jtripled
  */
-public class SimpleFactoryClientProxy extends SimpleFactoryCommonProxy
+public class VoxenClientProxy extends VoxenCommonProxy
 {
     @Override
-    protected void preInit(FMLPreInitializationEvent event)
+    public void preInit(FMLPreInitializationEvent event)
     {
         super.preInit(event);
     }
 
     @Override
-    protected void init(FMLInitializationEvent event)
+    public void init(FMLInitializationEvent event)
     {
         super.init(event);
     }
 
     @Override
-    protected void postInit(FMLPostInitializationEvent event)
+    public void postInit(FMLPostInitializationEvent event)
     {
         super.postInit(event);
     }
 
     @Override
-    public void registerItemRenderer(Item item, String id)
+    public void registerItemRenderer(ItemBase item, String id)
     {
-        registerItemRenderer(item, 0, new ModelResourceLocation(SimpleFactory.ID + ":" + id, "normal"));
+        registerItemRenderer(item, 0, new ModelResourceLocation(VoxenMod.ID + ":" + id, "inventory"));
     }
 
     @Override
-    public void registerItemRenderer(Item item, int meta, String id)
+    public void registerItemRenderer(ItemBase item, int meta, String id)
     {
-        registerItemRenderer(item, meta, new ModelResourceLocation(SimpleFactory.ID + ":" + id, "normal"));
+        registerItemRenderer(item, meta, new ModelResourceLocation(VoxenMod.ID + ":" + id, "inventory"));
     }
 
     @Override
-    public void registerItemRenderer(Item item, int meta, ModelResourceLocation resource)
+    public void registerItemRenderer(ItemBase item, int meta, ModelResourceLocation resource)
     {
-        ModelLoader.setCustomModelResourceLocation(item, meta, resource);
+        ModelLoader.setCustomModelResourceLocation((Item) item, meta, resource);
     }
 
     @Override

@@ -1,8 +1,12 @@
 package com.jtripled.simplefactory.blocks;
 
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.SimpleFactoryRegistry;
-import com.jtripled.simplefactory.SimpleFactoryRegistry.*;
+import com.jtripled.simplefactory.SimpleFactoryRegistrationHandler;
+import com.jtripled.simplefactory.SimpleFactoryRegistrationHandler.*;
+import com.jtripled.voxen.block.BlockBase;
+import com.jtripled.voxen.gui.GUIBase;
+import com.jtripled.voxen.mod.VoxenConfig;
+import com.jtripled.voxen.registry.VoxenRegistry;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -31,10 +35,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  *
@@ -43,7 +45,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 public class GratedHopperBlock extends Block implements BlockBase, GUIBase
 {
     public static final String NAME = "grated_hopper";
-    public static final int GUI_ID = SimpleFactoryRegistry.nextGUIID();
+    public static final int GUI_ID = VoxenRegistry.nextGUIID();
     public static final PropertyDirection FACING = PropertyDirection.create("facing", (@Nullable EnumFacing face) -> face != EnumFacing.UP);
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
     
@@ -59,7 +61,7 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
     {
         super(Material.IRON);
         this.setUnlocalizedName(NAME);
-        this.setRegistryName(new ResourceLocation(SimpleFactory.ID, NAME));
+        this.setRegistryName(new ResourceLocation(VoxenConfig.ID, NAME));
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, true));
         this.item = new ItemBlock(this);
@@ -240,7 +242,7 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public void registerBlock(SimpleFactoryRegistry registry)
+    public void registerBlock(VoxenRegistry registry)
     {
         SimpleFactory.PROXY.registerBlockStateMap(this, (new StateMap.Builder()).ignore(ENABLED).build());
         registry.registerBlock(this);
@@ -249,14 +251,14 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public void registerItem(SimpleFactoryRegistry registry)
+    public void registerItem(VoxenRegistry registry)
     {
         registry.registerItem(item);
     }
     
     @Override
-    public void registerRenderer(SimpleFactoryRegistry registry)
+    public void registerRenderer(VoxenRegistry registry)
     {
-        registry.registerItemRenderer(item, NAME);
+        //registry.registerItemRenderer(item, NAME);
     }
 }

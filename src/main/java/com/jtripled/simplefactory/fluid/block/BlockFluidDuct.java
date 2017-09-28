@@ -1,8 +1,5 @@
 package com.jtripled.simplefactory.fluid.block;
 
-import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.SimpleFactoryRegistry;
-import com.jtripled.simplefactory.fluid.tile.TileFluid;
 import com.jtripled.simplefactory.fluid.tile.TileFluidDuct;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -15,7 +12,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -28,7 +24,6 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
  */
 public class BlockFluidDuct extends BlockFluid
 {
-    public static final String NAME = "fluid_duct";
     public static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(0.3125, 0.3125, 0.3125, 0.6875, 0.6875, 0.6875);
     public static final PropertyEnum<EnumFacing> FACING = PropertyEnum.<EnumFacing>create("facing", EnumFacing.class);
     public static final PropertyBool NORTH = PropertyBool.create("north");
@@ -38,18 +33,17 @@ public class BlockFluidDuct extends BlockFluid
     public static final PropertyBool UP = PropertyBool.create("up");
     public static final PropertyBool DOWN = PropertyBool.create("down");
     
-    public final ItemBlock item;
-    
     public BlockFluidDuct()
     {
-        super(Material.IRON);
-        this.setUnlocalizedName(NAME);
-        this.setRegistryName(new ResourceLocation(SimpleFactory.ID, NAME));
+        super(Material.IRON, "fluid_duct");
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false).withProperty(UP, false).withProperty(DOWN, false));
-        this.item = new ItemBlock(this);
-        this.item.setUnlocalizedName(this.getUnlocalizedName());
-        this.item.setRegistryName(this.getRegistryName());
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState()
+    {
+        return new BlockStateContainer(this, new IProperty[] {FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN});
     }
 
     @Override
@@ -62,12 +56,6 @@ public class BlockFluidDuct extends BlockFluid
     public int getMetaFromState(IBlockState state)
     {
         return ((EnumFacing)state.getValue(FACING)).getIndex();
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN});
     }
 
     @Override
@@ -102,18 +90,12 @@ public class BlockFluidDuct extends BlockFluid
             case UP: up = true; break;
             case DOWN: down = true; break;
         }
-        if (north)
-            bb = bb.expand(0, 0, -0.3125);
-        if (east)
-            bb = bb.expand(0.3125, 0, 0);
-        if (south)
-            bb = bb.expand(0, 0, 0.3125);
-        if (west)
-            bb = bb.expand(-0.3125, 0, 0);
-        if (up)
-            bb = bb.expand(0, 0.3125, 0);
-        if (down)
-            bb = bb.expand(0, -0.3125, 0);
+        if (north) bb = bb.expand(0, 0, -0.3125);
+        if (east) bb = bb.expand(0.3125, 0, 0);
+        if (south) bb = bb.expand(0, 0, 0.3125);
+        if (west) bb = bb.expand(-0.3125, 0, 0);
+        if (up) bb = bb.expand(0, 0.3125, 0);
+        if (down) bb = bb.expand(0, -0.3125, 0);
         return bb;
     }
     
@@ -136,12 +118,6 @@ public class BlockFluidDuct extends BlockFluid
              .withProperty(DOWN, canConnect(state, world, pos.down()) && facing != EnumFacing.DOWN);
     }
     
-    @Override
-    public TileFluid createTileEntity(World world, IBlockState state)
-    {
-        return new TileFluidDuct();
-    }
-    
     public boolean canConnect(IBlockState state, IBlockAccess world, BlockPos pos)
     {
         TileEntity tile = world.getTileEntity(pos);
@@ -149,22 +125,8 @@ public class BlockFluidDuct extends BlockFluid
     }
     
     @Override
-    public void registerBlock(SimpleFactoryRegistry registry)
+    public Class<? extends TileEntity> getTileClass()
     {
-        registry.registerBlock(this);
-        registry.registerTileEntity(this, TileFluidDuct.class);
-        registry.registerGUI(this);
-    }
-    
-    @Override
-    public void registerItem(SimpleFactoryRegistry registry)
-    {
-        registry.registerItem(item);
-    }
-    
-    @Override
-    public void registerRenderer(SimpleFactoryRegistry registry)
-    {
-        registry.registerItemRenderer(item, NAME);
+        return TileFluidDuct.class;
     }
 }

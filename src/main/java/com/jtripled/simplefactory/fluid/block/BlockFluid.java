@@ -3,16 +3,20 @@ package com.jtripled.simplefactory.fluid.block;
 import com.jtripled.simplefactory.fluid.inventory.GUIFluid;
 import com.jtripled.simplefactory.fluid.inventory.ContainerFluid;
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.SimpleFactoryRegistry;
-import com.jtripled.simplefactory.SimpleFactoryRegistry.BlockBase;
-import com.jtripled.simplefactory.SimpleFactoryRegistry.GUIBase;
 import com.jtripled.simplefactory.fluid.tile.TileFluid;
+import com.jtripled.voxen.block.BlockBase;
+import com.jtripled.voxen.gui.GUIBase;
+import com.jtripled.voxen.item.ItemBase;
+import com.jtripled.voxen.item.ItemBlockBase;
+import com.jtripled.voxen.registry.VoxenRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -25,12 +29,20 @@ import net.minecraftforge.fluids.FluidTank;
  */
 public abstract class BlockFluid extends Block implements BlockBase, GUIBase
 {
-    private int guiID;
+    private final int guiID;
+    private final ItemBlockBase item;
+    private final String name;
     
-    public BlockFluid(Material material)
+    public BlockFluid(Material material, String name)
     {
         super(material);
-        this.guiID = SimpleFactoryRegistry.nextGUIID();
+        this.name = name;
+        this.guiID = VoxenRegistry.nextGUIID();
+        this.setUnlocalizedName(name);
+        this.setRegistryName(new ResourceLocation(SimpleFactory.ID, name));
+        this.item = new ItemBlockBase(this);
+        this.item.setUnlocalizedName(this.getUnlocalizedName());
+        this.item.setRegistryName(this.getRegistryName());
     }
     
     @Override
@@ -38,9 +50,6 @@ public abstract class BlockFluid extends Block implements BlockBase, GUIBase
     {
         return true;
     }
-    
-    @Override
-    public abstract TileFluid createTileEntity(World world, IBlockState state);
 
     @Override
     public int getGUIID()
@@ -84,5 +93,27 @@ public abstract class BlockFluid extends Block implements BlockBase, GUIBase
             openGUI(player, world, internalPos.getX(), internalPos.getY(), internalPos.getZ());
         }
         return true;
+    }
+    
+    @Override
+    public abstract Class<? extends TileEntity> getTileClass();
+    
+    @Override
+    public TileFluid createTileEntity(World world, IBlockState state)
+    {
+        try
+        {
+            return (TileFluid) getTileClass().newInstance();
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+    
+    @Override
+    public ItemBase getItem()
+    {
+        return item;
     }
 }

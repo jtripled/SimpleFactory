@@ -1,9 +1,9 @@
 package com.jtripled.simplefactory.blocks;
 
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.SimpleFactoryRegistry;
-import com.jtripled.simplefactory.SimpleFactoryRegistry.BlockBase;
-import com.jtripled.simplefactory.SimpleFactoryRegistry.GUIBase;
+import com.jtripled.voxen.block.BlockBase;
+import com.jtripled.voxen.gui.GUIBase;
+import com.jtripled.voxen.registry.VoxenRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -32,7 +32,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 public class ItemDuctBlock extends Block implements BlockBase, GUIBase
 {
     public static final String NAME = "item_duct";
-    public static final int GUI_ID = SimpleFactoryRegistry.nextGUIID();
+    public static final int GUI_ID = VoxenRegistry.nextGUIID();
     public static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(0.3125, 0.3125, 0.3125, 0.6875, 0.6875, 0.6875);
     public static final PropertyEnum<EnumFacing> FACING = PropertyEnum.<EnumFacing>create("facing", EnumFacing.class);
     public static final PropertyBool NORTH = PropertyBool.create("north");
@@ -205,7 +205,7 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public void registerBlock(SimpleFactoryRegistry registry)
+    public void registerBlock(VoxenRegistry registry)
     {
         registry.registerBlock(this);
         registry.registerTileEntity(this, ItemDuctTile.class);
@@ -213,14 +213,14 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public void registerItem(SimpleFactoryRegistry registry)
+    public void registerItem(VoxenRegistry registry)
     {
         registry.registerItem(item);
     }
     
     @Override
-    public void registerRenderer(SimpleFactoryRegistry registry)
+    public void registerRenderer(VoxenRegistry registry)
     {
-        registry.registerItemRenderer(item, NAME);
+        //registry.registerItemRenderer(item, NAME);
     }
 }

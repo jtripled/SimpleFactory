@@ -1,31 +1,22 @@
 package com.jtripled.simplefactory.fluid.block;
 
-import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.SimpleFactoryRegistry;
-import com.jtripled.simplefactory.fluid.tile.TileFluid;
 import com.jtripled.simplefactory.fluid.tile.TilePump;
-import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import static net.minecraft.block.Block.FULL_BLOCK_AABB;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -38,44 +29,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class BlockPump extends BlockFluid
 {
-    public static final String NAME = "pump";
     public static final PropertyDirection FACING = PropertyDirection.create("facing", (@Nullable EnumFacing face) -> face != EnumFacing.UP);
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
     
-    protected static final AxisAlignedBB BASE_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.625D, 1.0D);
-    protected static final AxisAlignedBB SOUTH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.125D);
-    protected static final AxisAlignedBB NORTH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.875D, 1.0D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB WEST_AABB = new AxisAlignedBB(0.875D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB EAST_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.125D, 1.0D, 1.0D);
-    
-    private final ItemBlock item;
-    
     public BlockPump()
     {
-        super(Material.IRON);
-        this.setUnlocalizedName(NAME);
-        this.setRegistryName(new ResourceLocation(SimpleFactory.ID, NAME));
+        super(Material.IRON, "pump");
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, true));
-        this.item = new ItemBlock(this);
-        this.item.setUnlocalizedName(this.getUnlocalizedName());
-        this.item.setRegistryName(this.getRegistryName());
-    }
-
-    @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-    {
-        return FULL_BLOCK_AABB;
-    }
-
-    @Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
-    {
-        addCollisionBoxToList(pos, entityBox, collidingBoxes, BASE_AABB);
-        addCollisionBoxToList(pos, entityBox, collidingBoxes, EAST_AABB);
-        addCollisionBoxToList(pos, entityBox, collidingBoxes, WEST_AABB);
-        addCollisionBoxToList(pos, entityBox, collidingBoxes, SOUTH_AABB);
-        addCollisionBoxToList(pos, entityBox, collidingBoxes, NORTH_AABB);
     }
     
     @Override
@@ -169,12 +130,6 @@ public class BlockPump extends BlockFluid
             i |= 8;
         return i;
     }
-    
-    @Override
-    public TileFluid createTileEntity(World world, IBlockState state)
-    {
-        return new TilePump();
-    }
 
     @Override
     public IBlockState withRotation(IBlockState state, Rotation rot)
@@ -195,23 +150,14 @@ public class BlockPump extends BlockFluid
     }
     
     @Override
-    public void registerBlock(SimpleFactoryRegistry registry)
+    public Class<? extends TileEntity> getTileClass()
     {
-        SimpleFactory.PROXY.registerBlockStateMap(this, (new StateMap.Builder()).ignore(ENABLED).build());
-        registry.registerBlock(this);
-        registry.registerTileEntity(this, TilePump.class);
-        registry.registerGUI(this);
+        return TilePump.class;
     }
     
     @Override
-    public void registerItem(SimpleFactoryRegistry registry)
+    public IProperty[] getIgnoredProperties()
     {
-        registry.registerItem(item);
-    }
-    
-    @Override
-    public void registerRenderer(SimpleFactoryRegistry registry)
-    {
-        registry.registerItemRenderer(item, NAME);
+        return new IProperty[] {ENABLED};
     }
 }
