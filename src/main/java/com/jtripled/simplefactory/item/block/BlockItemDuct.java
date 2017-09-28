@@ -1,11 +1,8 @@
-package com.jtripled.simplefactory.blocks;
+package com.jtripled.simplefactory.item.block;
 
-import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.voxen.block.BlockBase;
-import com.jtripled.voxen.gui.GUIBase;
-import com.jtripled.voxen.item.ItemBlockBase;
-import com.jtripled.voxen.registry.RegistrationHandler;
-import net.minecraft.block.Block;
+import com.jtripled.simplefactory.item.inventory.ContainerItemDuct;
+import com.jtripled.simplefactory.item.inventory.GUIItemDuct;
+import com.jtripled.simplefactory.item.tile.TileItemDuct;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -17,8 +14,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -29,10 +24,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
  *
  * @author jtripled
  */
-public class ItemDuctBlock extends Block implements BlockBase, GUIBase
+public class BlockItemDuct extends BlockItem
 {
-    public static final String NAME = "item_duct";
-    public static final int GUI_ID = RegistrationHandler.nextGUIID();
     public static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(0.3125, 0.3125, 0.3125, 0.6875, 0.6875, 0.6875);
     public static final PropertyEnum<EnumFacing> FACING = PropertyEnum.<EnumFacing>create("facing", EnumFacing.class);
     public static final PropertyBool NORTH = PropertyBool.create("north");
@@ -42,24 +35,17 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
     public static final PropertyBool UP = PropertyBool.create("up");
     public static final PropertyBool DOWN = PropertyBool.create("down");
     
-    private final ItemBlockBase item;
-    
-    public ItemDuctBlock()
+    public BlockItemDuct()
     {
-        super(Material.IRON);
-        this.setUnlocalizedName(NAME);
-        this.setRegistryName(new ResourceLocation(SimpleFactory.ID, NAME));
+        super(Material.IRON, "item_duct");
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false).withProperty(UP, false).withProperty(DOWN, false));
-        this.item = new ItemBlockBase(this);
-        this.item.setUnlocalizedName(this.getUnlocalizedName());
-        this.item.setRegistryName(this.getRegistryName());
     }
-    
+
     @Override
-    public String getName()
+    protected BlockStateContainer createBlockState()
     {
-        return NAME;
+        return new BlockStateContainer(this, new IProperty[] {FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN});
     }
 
     @Override
@@ -72,12 +58,6 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
     public int getMetaFromState(IBlockState state)
     {
         return ((EnumFacing)state.getValue(FACING)).getIndex();
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN});
     }
 
     @Override
@@ -112,18 +92,12 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
             case UP: up = true; break;
             case DOWN: down = true; break;
         }
-        if (north)
-            bb = bb.expand(0, 0, -0.3125);
-        if (east)
-            bb = bb.expand(0.3125, 0, 0);
-        if (south)
-            bb = bb.expand(0, 0, 0.3125);
-        if (west)
-            bb = bb.expand(-0.3125, 0, 0);
-        if (up)
-            bb = bb.expand(0, 0.3125, 0);
-        if (down)
-            bb = bb.expand(0, -0.3125, 0);
+        if (south) bb = bb.expand( 0,       0,      0.3125);
+        if (north) bb = bb.expand( 0,       0,     -0.3125);
+        if (east)  bb = bb.expand( 0.3125,  0,      0);
+        if (west)  bb = bb.expand(-0.3125,  0,      0);
+        if (up)    bb = bb.expand( 0,       0.3125, 0);
+        if (down)  bb = bb.expand( 0,      -0.3125, 0);
         return bb;
     }
     
@@ -146,40 +120,6 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
              .withProperty(DOWN, canConnect(state, world, pos.down()) && facing != EnumFacing.DOWN);
     }
     
-    @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state)
-    {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof ItemDuctTile)
-        {
-            //InventoryHelper.dropInventoryItems(world, pos, (ItemDuctTile) tile);
-            world.updateComparatorOutputLevel(pos, this);
-        }
-        super.breakBlock(world, pos, state);
-    }
-    
-    @Override
-    public boolean hasTileEntity(IBlockState state)
-    {
-        return true;
-    }
-    
-    @Override
-    public TileEntity createTileEntity(World world, IBlockState state)
-    {
-        return new ItemDuctTile();
-    }
-    
-    @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
-    {
-        if (!world.isRemote)
-        {
-            openGUI(player, world, pos.getX(), pos.getY(), pos.getZ());
-        }
-        return true;
-    }
-    
     public boolean canConnect(IBlockState state, IBlockAccess world, BlockPos pos)
     {
         TileEntity tile = world.getTileEntity(pos);
@@ -187,46 +127,20 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public int getGUIID()
+    public Class<? extends TileEntity> getTileClass()
     {
-        return GUI_ID;
+        return TileItemDuct.class;
     }
 
     @Override
-    public ItemDuctContainer getServerGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return new ItemDuctContainer((ItemDuctTile) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
+        return new ContainerItemDuct((TileItemDuct) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
     }
 
     @Override
-    public ItemDuctGUI getClientGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return new ItemDuctGUI(getServerGUI(player, world, x, y, z));
-    }
-    
-    @Override
-    public void openGUI(EntityPlayer player, World world, int x, int y, int z)
-    {
-        player.openGui(SimpleFactory.INSTANCE, GUI_ID, world, x, y, z);
-    }
-    
-    @Override
-    public void registerBlock(RegistrationHandler registry)
-    {
-        registry.registerBlock(this);
-        registry.registerTileEntity(this, ItemDuctTile.class);
-        registry.registerGUI(this);
-    }
-    
-    @Override
-    public void registerItem(RegistrationHandler registry)
-    {
-        registry.registerItem(item);
-    }
-    
-    @Override
-    public void registerRenderer(RegistrationHandler registry)
-    {
-        //registry.registerItemRenderer(item, NAME);
+        return new GUIItemDuct((ContainerItemDuct) getServerGUI(player, world, x, y, z));
     }
 }

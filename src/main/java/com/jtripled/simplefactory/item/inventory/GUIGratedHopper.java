@@ -1,4 +1,4 @@
-package com.jtripled.simplefactory.blocks;
+package com.jtripled.simplefactory.item.inventory;
 
 import com.jtripled.simplefactory.SimpleFactory;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -9,13 +9,13 @@ import net.minecraft.util.ResourceLocation;
  *
  * @author jtripled
  */
-public class GratedHopperGUI extends GuiContainer
+public class GUIGratedHopper extends GuiContainer
 {
-    protected final GratedHopperContainer container;
+    protected final ContainerGratedHopper container;
     protected final String name;
     protected final ResourceLocation texture;
 
-    public GratedHopperGUI(GratedHopperContainer container)
+    public GUIGratedHopper(ContainerGratedHopper container)
     {
         super(container);
         this.container = container;
@@ -42,7 +42,7 @@ public class GratedHopperGUI extends GuiContainer
         drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
     }
     
-    public GratedHopperContainer getContainer()
+    public ContainerGratedHopper getContainer()
     {
         return container;
     }

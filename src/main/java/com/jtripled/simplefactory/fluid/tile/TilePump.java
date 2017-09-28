@@ -1,5 +1,6 @@
 package com.jtripled.simplefactory.fluid.tile;
 
+import com.jtripled.simplefactory.fluid.block.BlockPump;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.tileentity.TileEntity;
@@ -27,7 +28,8 @@ public class TilePump extends TileFluid implements ITickable
     @Override
     public void update()
     {
-        updateTransfer();
+        if (world.getBlockState(pos).getValue(BlockPump.ENABLED))
+            updateTransfer();
     }
     
     @Override

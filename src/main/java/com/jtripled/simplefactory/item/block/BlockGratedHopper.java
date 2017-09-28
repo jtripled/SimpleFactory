@@ -1,11 +1,8 @@
-package com.jtripled.simplefactory.blocks;
+package com.jtripled.simplefactory.item.block;
 
-import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.voxen.block.BlockBase;
-import com.jtripled.voxen.gui.GUIBase;
-import com.jtripled.voxen.item.ItemBlockBase;
-import com.jtripled.voxen.mod.VoxenConfig;
-import com.jtripled.voxen.registry.RegistrationHandler;
+import com.jtripled.simplefactory.item.inventory.ContainerGratedHopper;
+import com.jtripled.simplefactory.item.inventory.GUIGratedHopper;
+import com.jtripled.simplefactory.item.tile.TileGratedHopper;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -16,18 +13,14 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.Mirror;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -40,10 +33,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author jtripled
  */
-public class GratedHopperBlock extends Block implements BlockBase, GUIBase
+public class BlockGratedHopper extends BlockItem
 {
-    public static final String NAME = "grated_hopper";
-    public static final int GUI_ID = RegistrationHandler.nextGUIID();
     public static final PropertyDirection FACING = PropertyDirection.create("facing", (@Nullable EnumFacing face) -> face != EnumFacing.UP);
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
     
@@ -53,24 +44,11 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
     protected static final AxisAlignedBB WEST_AABB = new AxisAlignedBB(0.875D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
     protected static final AxisAlignedBB EAST_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.125D, 1.0D, 1.0D);
     
-    private final ItemBlockBase item;
-    
-    public GratedHopperBlock()
+    public BlockGratedHopper()
     {
-        super(Material.IRON);
-        this.setUnlocalizedName(NAME);
-        this.setRegistryName(new ResourceLocation(VoxenConfig.ID, NAME));
+        super(Material.IRON, "grated_hopper");
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, true));
-        this.item = new ItemBlockBase(this);
-        this.item.setUnlocalizedName(this.getUnlocalizedName());
-        this.item.setRegistryName(this.getRegistryName());
-    }
-    
-    @Override
-    public String getName()
-    {
-        return NAME;
     }
 
     @Override
@@ -122,12 +100,6 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
         if (flag != ((boolean)state.getValue(ENABLED)))
             worldIn.setBlockState(pos, state.withProperty(ENABLED, flag), 4);
     }
-    
-    @Override
-    public EnumBlockRenderType getRenderType(IBlockState state)
-    {
-        return EnumBlockRenderType.MODEL;
-    }
 
     @Override
     public boolean isFullCube(IBlockState state)
@@ -164,16 +136,6 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
     {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
-    
-    @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
-    {
-        if (!world.isRemote)
-        {
-            openGUI(player, world, pos.getX(), pos.getY(), pos.getZ());
-        }
-        return true;
-    }
 
     @Override
     public IBlockState getStateFromMeta(int meta)
@@ -189,18 +151,6 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
         if (!((boolean)state.getValue(ENABLED)))
             i |= 8;
         return i;
-    }
-    
-    @Override
-    public boolean hasTileEntity(IBlockState state)
-    {
-        return true;
-    }
-    
-    @Override
-    public TileEntity createTileEntity(World world, IBlockState state)
-    {
-        return new GratedHopperTile();
     }
 
     @Override
@@ -222,47 +172,26 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public int getGUIID()
+    public Class<? extends TileEntity> getTileClass()
     {
-        return GUI_ID;
+        return TileGratedHopper.class;
+    }
+    
+    @Override
+    public IProperty[] getIgnoredProperties()
+    {
+        return new IProperty[] {ENABLED};
     }
 
     @Override
-    public GratedHopperContainer getServerGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return new GratedHopperContainer((GratedHopperTile) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
+        return new ContainerGratedHopper((TileGratedHopper) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
     }
 
     @Override
-    public GratedHopperGUI getClientGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return new GratedHopperGUI(getServerGUI(player, world, x, y, z));
-    }
-    
-    @Override
-    public void openGUI(EntityPlayer player, World world, int x, int y, int z)
-    {
-        player.openGui(SimpleFactory.INSTANCE, GUI_ID, world, x, y, z);
-    }
-    
-    @Override
-    public void registerBlock(RegistrationHandler registry)
-    {
-        SimpleFactory.PROXY.registerBlockStateMap(this, (new StateMap.Builder()).ignore(ENABLED).build());
-        registry.registerBlock(this);
-        registry.registerTileEntity(this, GratedHopperTile.class);
-        registry.registerGUI(this);
-    }
-    
-    @Override
-    public void registerItem(RegistrationHandler registry)
-    {
-        registry.registerItem(item);
-    }
-    
-    @Override
-    public void registerRenderer(RegistrationHandler registry)
-    {
-        //registry.registerItemRenderer(item, NAME);
+        return new GUIGratedHopper((ContainerGratedHopper) getServerGUI(player, world, x, y, z));
     }
 }

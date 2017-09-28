@@ -89,12 +89,12 @@ public class BlockFluidDuct extends BlockFluid
             case UP: up = true; break;
             case DOWN: down = true; break;
         }
-        if (north) bb = bb.expand(0, 0, -0.3125);
-        if (east) bb = bb.expand(0.3125, 0, 0);
-        if (south) bb = bb.expand(0, 0, 0.3125);
-        if (west) bb = bb.expand(-0.3125, 0, 0);
-        if (up) bb = bb.expand(0, 0.3125, 0);
-        if (down) bb = bb.expand(0, -0.3125, 0);
+        if (south) bb = bb.expand( 0,       0,      0.3125);
+        if (north) bb = bb.expand( 0,       0,     -0.3125);
+        if (east)  bb = bb.expand( 0.3125,  0,      0);
+        if (west)  bb = bb.expand(-0.3125,  0,      0);
+        if (up)    bb = bb.expand( 0,       0.3125, 0);
+        if (down)  bb = bb.expand( 0,      -0.3125, 0);
         return bb;
     }
     

@@ -1,6 +1,5 @@
-package com.jtripled.simplefactory.blocks;
+package com.jtripled.simplefactory.item.tile;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,18 +17,30 @@ import net.minecraftforge.items.ItemStackHandler;
  *
  * @author jtripled
  */
-public class GratedHopperTile extends TileEntity implements ITickable
+public class TileItem extends TileEntity implements ITickable
 {
-    protected final ItemStackHandler filter;
-    protected final ItemStackHandler inventory;
+    protected ItemStackHandler inventory;
     private int transferCooldown;
-    private long tickedGameTime;
     
-    public GratedHopperTile()
+    public TileItem()
     {
-        this.filter = new GratedHopperFilterHandler();
-        this.inventory = new GratedHopperInventoryHandler(this.filter);
+        this.inventory = null;
         this.transferCooldown = -1;
+    }
+    
+    public boolean hasFilter()
+    {
+        return false;
+    }
+    
+    public IItemHandler getInventory()
+    {
+        return inventory;
+    }
+    
+    public IItemHandler getFilter()
+    {
+        return null;
     }
 
     @Override
@@ -50,18 +61,16 @@ public class GratedHopperTile extends TileEntity implements ITickable
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
-        compound.setTag("inventory", inventory.serializeNBT());
-        compound.setTag("filter", filter.serializeNBT());
         compound.setInteger("transferCooldown", transferCooldown);
+        compound.setTag("inventory", inventory.serializeNBT());
         return super.writeToNBT(compound);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound)
     {
-        inventory.deserializeNBT(compound.getCompoundTag("inventory"));
-        filter.deserializeNBT(compound.getCompoundTag("filter"));
         transferCooldown = compound.getInteger("transferCooldown");
+        inventory.deserializeNBT(compound.getCompoundTag("inventory"));
         super.readFromNBT(compound);
     }
     
@@ -95,22 +104,9 @@ public class GratedHopperTile extends TileEntity implements ITickable
         if (world != null && !world.isRemote)
         {
             --transferCooldown;
-            tickedGameTime = world.getTotalWorldTime();
-
             if (transferCooldown <= 0)
             {
                 transferCooldown = 0;
-                doTransfer();
-            }
-        }
-    }
-    
-    public boolean doTransfer()
-    {
-        if (world != null && !world.isRemote)
-        {
-            if (transferCooldown <= 0)
-            {
                 boolean flag = false;
                 if (!this.isEmpty())
                     flag = transferOut();
@@ -120,14 +116,8 @@ public class GratedHopperTile extends TileEntity implements ITickable
                 {
                     transferCooldown = 8;
                     this.markDirty();
-                    return true;
                 }
             }
-            return false;
-        }
-        else
-        {
-            return false;
         }
     }
 
@@ -153,71 +143,11 @@ public class GratedHopperTile extends TileEntity implements ITickable
     
     public boolean transferOut()
     {
-        TileEntity testTile = world.getTileEntity(pos.offset(GratedHopperBlock.getFacing(this.getBlockMetadata())));
-        if (testTile != null && testTile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
-        {
-            IItemHandler nextInventory = testTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            for (int i = 0; i < inventory.getSlots(); i++)
-            {
-                ItemStack outStack = inventory.getStackInSlot(i);
-                if (!outStack.isEmpty())
-                {
-                    ItemStack inStack;
-                    for (int j = 0; j < nextInventory.getSlots(); j++)
-                    {
-                        inStack = nextInventory.getStackInSlot(j);
-                        if (inStack.isEmpty() || (inStack.getCount() < inStack.getMaxStackSize()
-                                && outStack.getItem() == inStack.getItem()))
-                        {
-                            nextInventory.insertItem(j, inventory.extractItem(i, 1, false), false);
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
         return false;
     }
     
     public boolean transferIn()
     {
-        return true;
-    }
-    
-    public static class GratedHopperFilterHandler extends ItemStackHandler
-    {
-        public GratedHopperFilterHandler()
-        {
-            super(5);
-        }
-        
-        @Override
-        public int getSlotLimit(int slot)
-        {
-            return 1;
-        }
-    }
-    
-    public static class GratedHopperInventoryHandler extends ItemStackHandler
-    {
-        private final IItemHandler filter;
-        
-        public GratedHopperInventoryHandler(IItemHandler filter)
-        {
-            super(5);
-            this.filter = filter;
-        }
-        
-        @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
-        {
-            ItemStack compare = new ItemStack(stack.getItem(), 1, stack.getMetadata());
-            for (int i = 0; i < filter.getSlots(); i++)
-                if (ItemStack.areItemStacksEqual(compare, filter.getStackInSlot(i)))
-                    return super.insertItem(slot, stack, simulate);
-            return stack;
-        }
+        return false;
     }
 }

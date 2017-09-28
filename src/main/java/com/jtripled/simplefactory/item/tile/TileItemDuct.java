@@ -1,33 +1,72 @@
-package com.jtripled.simplefactory.fluid.tile;
+package com.jtripled.simplefactory.item.tile;
 
-import com.jtripled.simplefactory.fluid.block.BlockFluidDuct;
 import com.jtripled.simplefactory.item.block.BlockItemDuct;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 /**
  *
  * @author jtripled
  */
-public class TileFluidDuct extends TileFluid implements ITickable
+public class TileItemDuct extends TileItem
 {
     private EnumFacing previous;
     
-    public TileFluidDuct()
+    public TileItemDuct()
     {
-        super(Fluid.BUCKET_VOLUME * 1);
         this.previous = EnumFacing.EAST;
+        this.inventory = new ItemStackHandler(1);
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    {
+        compound.setInteger("previous", previous.getIndex());
+        return super.writeToNBT(compound);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound)
+    {
+        previous = EnumFacing.getFront(compound.getInteger("previous"));
+        super.readFromNBT(compound);
     }
     
     @Override
-    public void update()
+    public boolean transferOut()
     {
-        updateTransfer();
+        EnumFacing next = getNextFacing(previous, world.getBlockState(pos).getActualState(world, pos));
+        if (next == null)
+            return false;
+        TileEntity testTile = world.getTileEntity(pos.offset(next));
+        if (testTile != null && testTile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+        {
+            previous = next;
+            IItemHandler nextInventory = testTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            ItemStack outStack = inventory.getStackInSlot(0);
+            if (!outStack.isEmpty())
+            {
+                ItemStack inStack;
+                for (int i = 0; i < nextInventory.getSlots(); i++)
+                {
+                    inStack = nextInventory.getStackInSlot(i);
+                    if (inStack.isEmpty() || (inStack.getCount() < inStack.getMaxStackSize()
+                            && outStack.getItem() == inStack.getItem()))
+                    {
+                        nextInventory.insertItem(i, inventory.extractItem(0, 1, false), false);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        return false;
     }
     
     private static EnumFacing getNextFacing(EnumFacing previous, IBlockState state)
@@ -44,7 +83,7 @@ public class TileFluidDuct extends TileFluid implements ITickable
         }
         for (EnumFacing face : next)
         {
-            if (face != state.getValue(BlockFluidDuct.FACING))
+            if (face != state.getValue(BlockItemDuct.FACING))
             {
                 switch (face)
                 {
@@ -58,27 +97,5 @@ public class TileFluidDuct extends TileFluid implements ITickable
             }
         }
         return null;
-    }
-    
-    @Override
-    public boolean transferOut()
-    {
-        EnumFacing next = getNextFacing(previous, world.getBlockState(pos).getActualState(world, pos));
-        if (next == null)
-            return false;
-        TileEntity testTile = world.getTileEntity(pos.offset(next));
-        if (testTile != null && testTile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
-        {
-            previous = next;
-            IFluidHandler nextInventory = testTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-            int amount = nextInventory.fill(drain(400, false), false);
-            if (tank.getFluidAmount() > 0 && amount > 0)
-            {
-                nextInventory.fill(drain(amount, true), true);
-                return true;
-            }
-            return false;
-        }
-        return false;
     }
 }

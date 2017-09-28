@@ -1,4 +1,4 @@
-package com.jtripled.simplefactory.blocks;
+package com.jtripled.simplefactory.item.inventory;
 
 import com.jtripled.simplefactory.SimpleFactory;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -9,13 +9,13 @@ import net.minecraft.util.ResourceLocation;
  *
  * @author jtripled
  */
-public class ItemDuctGUI extends GuiContainer
+public class GUIItemDuct extends GuiContainer
 {
-    protected final ItemDuctContainer container;
+    protected final ContainerItemDuct container;
     protected final String name;
     protected final ResourceLocation texture;
 
-    public ItemDuctGUI(ItemDuctContainer container)
+    public GUIItemDuct(ContainerItemDuct container)
     {
         super(container);
         this.container = container;
@@ -42,7 +42,7 @@ public class ItemDuctGUI extends GuiContainer
         drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
     }
     
-    public ItemDuctContainer getContainer()
+    public ContainerItemDuct getContainer()
     {
         return container;
     }
