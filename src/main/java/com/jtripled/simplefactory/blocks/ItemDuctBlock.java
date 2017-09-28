@@ -3,7 +3,7 @@ package com.jtripled.simplefactory.blocks;
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.gui.GUIBase;
-import com.jtripled.voxen.registry.VoxenRegistry;
+import com.jtripled.voxen.registry.RegistrationHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -32,7 +32,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 public class ItemDuctBlock extends Block implements BlockBase, GUIBase
 {
     public static final String NAME = "item_duct";
-    public static final int GUI_ID = VoxenRegistry.nextGUIID();
+    public static final int GUI_ID = RegistrationHandler.nextGUIID();
     public static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(0.3125, 0.3125, 0.3125, 0.6875, 0.6875, 0.6875);
     public static final PropertyEnum<EnumFacing> FACING = PropertyEnum.<EnumFacing>create("facing", EnumFacing.class);
     public static final PropertyBool NORTH = PropertyBool.create("north");
@@ -54,6 +54,12 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
         this.item = new ItemBlock(this);
         this.item.setUnlocalizedName(this.getUnlocalizedName());
         this.item.setRegistryName(this.getRegistryName());
+    }
+    
+    @Override
+    public String getName()
+    {
+        return NAME;
     }
 
     @Override
@@ -205,7 +211,7 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public void registerBlock(VoxenRegistry registry)
+    public void registerBlock(RegistrationHandler registry)
     {
         registry.registerBlock(this);
         registry.registerTileEntity(this, ItemDuctTile.class);
@@ -213,13 +219,13 @@ public class ItemDuctBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public void registerItem(VoxenRegistry registry)
+    public void registerItem(RegistrationHandler registry)
     {
         registry.registerItem(item);
     }
     
     @Override
-    public void registerRenderer(VoxenRegistry registry)
+    public void registerRenderer(RegistrationHandler registry)
     {
         //registry.registerItemRenderer(item, NAME);
     }

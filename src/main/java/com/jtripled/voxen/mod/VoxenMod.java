@@ -1,8 +1,8 @@
 package com.jtripled.voxen.mod;
 
 import com.jtripled.voxen.proxy.VoxenCommonProxy;
+import com.jtripled.voxen.registry.Registry;
 import com.jtripled.voxen.registry.RegistrationHandler;
-import com.jtripled.voxen.registry.VoxenRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -33,7 +33,7 @@ public class VoxenMod
     public static final String COMMON_PROXY = "com.jtripled.voxen.proxy.VoxenCommonProxy";
     public static final String CLIENT_PROXY = "com.jtripled.voxen.proxy.VoxenClientProxy";
     
-    public static final RegistrationHandler REGISTRATION_HANDLER = VoxenConfig.REGISTRATION_HANDLER;
+    public static final Registry REGISTRY = VoxenConfig.REGISTRY;
     
     @Mod.Instance(VoxenMod.ID)
     public static VoxenMod INSTANCE;
@@ -41,29 +41,29 @@ public class VoxenMod
     @SidedProxy(serverSide = VoxenMod.COMMON_PROXY, clientSide = VoxenMod.CLIENT_PROXY)
     public static VoxenCommonProxy PROXY;
     
-    public static VoxenRegistry REGISTRY = new VoxenRegistry();
+    public static RegistrationHandler REGISTRATION_HANDLER = new RegistrationHandler();
     public static final SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(VoxenMod.ID);
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
         PROXY.preInit(event);
-        REGISTRY.onPreInit(event);
+        REGISTRATION_HANDLER.onPreInit(event);
     }
     
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
         PROXY.init(event);
-        REGISTRY.onInit(event);
-        NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, REGISTRY);
+        REGISTRATION_HANDLER.onInit(event);
+        NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, REGISTRATION_HANDLER);
     }
     
     @EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
         PROXY.postInit(event);
-        REGISTRY.onPostInit(event);
+        REGISTRATION_HANDLER.onPostInit(event);
     }
     
     @Mod.EventBusSubscriber
@@ -72,25 +72,25 @@ public class VoxenMod
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event)
         {
-            REGISTRY.onRegisterItems(event.getRegistry());
+            REGISTRATION_HANDLER.onRegisterItems(event.getRegistry());
         }
 
         @SubscribeEvent
         public static void registerBlocks(RegistryEvent.Register<Block> event)
         {
-            REGISTRY.onRegisterBlocks(event.getRegistry());
+            REGISTRATION_HANDLER.onRegisterBlocks(event.getRegistry());
         }
 
         @SubscribeEvent
         public static void registerEntities(RegistryEvent.Register<EntityEntry> event)
         {
-            REGISTRY.onRegisterEntities(event.getRegistry());
+            REGISTRATION_HANDLER.onRegisterEntities(event.getRegistry());
         }
 
         @SubscribeEvent
         public static void registerRenderers(ModelRegistryEvent event)
         {
-            REGISTRY.onRegisterRenderers();
+            REGISTRATION_HANDLER.onRegisterRenderers();
         }
     }
 }

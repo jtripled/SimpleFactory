@@ -2,7 +2,7 @@ package com.jtripled.voxen.block;
 
 import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBase;
-import com.jtripled.voxen.registry.VoxenRegistry;
+import com.jtripled.voxen.registry.RegistrationHandler;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.Item;
@@ -14,7 +14,29 @@ import net.minecraft.tileentity.TileEntity;
  */
 public interface BlockBase
 {
-    public default void registerBlock(VoxenRegistry registry)
+    public String getName();
+
+    public default Class<? extends TileEntity> getTileClass()
+    {
+        return null;
+    }
+
+    public default ItemBase getItem()
+    {
+        return null;
+    }
+
+    public default TileEntitySpecialRenderer getTESR()
+    {
+        return null;
+    }
+    
+    public default IProperty[] getIgnoredProperties()
+    {
+        return null;
+    }
+    
+    public default void registerBlock(RegistrationHandler registry)
     {
         registry.registerBlock(this);
         if (getTileClass() != null)
@@ -36,35 +58,15 @@ public interface BlockBase
         }
     }
 
-    public default void registerItem(VoxenRegistry registry)
+    public default void registerItem(RegistrationHandler registry)
     {
         if (getItem() != null)
             registry.registerItem((Item) getItem());
     }
 
-    public default void registerRenderer(VoxenRegistry registry)
+    public default void registerRenderer(RegistrationHandler registry)
     {
         if (getItem() != null)
-            registry.registerItemRenderer(getItem(), ((Item) getItem()).getUnlocalizedName());
-    }
-
-    public default Class<? extends TileEntity> getTileClass()
-    {
-        return null;
-    }
-
-    public default ItemBase getItem()
-    {
-        return null;
-    }
-
-    public default TileEntitySpecialRenderer getTESR()
-    {
-        return null;
-    }
-    
-    public default IProperty[] getIgnoredProperties()
-    {
-        return null;
+            registry.registerItemRenderer(getItem(), getName());
     }
 }

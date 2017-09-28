@@ -8,7 +8,7 @@ import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBase;
 import com.jtripled.voxen.item.ItemBlockBase;
-import com.jtripled.voxen.registry.VoxenRegistry;
+import com.jtripled.voxen.registry.RegistrationHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -37,12 +37,18 @@ public abstract class BlockFluid extends Block implements BlockBase, GUIBase
     {
         super(material);
         this.name = name;
-        this.guiID = VoxenRegistry.nextGUIID();
+        this.guiID = RegistrationHandler.nextGUIID();
         this.setUnlocalizedName(name);
         this.setRegistryName(new ResourceLocation(SimpleFactory.ID, name));
         this.item = new ItemBlockBase(this);
         this.item.setUnlocalizedName(this.getUnlocalizedName());
         this.item.setRegistryName(this.getRegistryName());
+    }
+    
+    @Override
+    public String getName()
+    {
+        return name;
     }
     
     @Override

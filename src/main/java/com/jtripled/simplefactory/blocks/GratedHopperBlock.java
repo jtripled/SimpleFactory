@@ -1,12 +1,12 @@
 package com.jtripled.simplefactory.blocks;
 
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.SimpleFactoryRegistrationHandler;
-import com.jtripled.simplefactory.SimpleFactoryRegistrationHandler.*;
+import com.jtripled.simplefactory.SimpleFactoryRegistry;
+import com.jtripled.simplefactory.SimpleFactoryRegistry.*;
 import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.mod.VoxenConfig;
-import com.jtripled.voxen.registry.VoxenRegistry;
+import com.jtripled.voxen.registry.RegistrationHandler;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -45,7 +45,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class GratedHopperBlock extends Block implements BlockBase, GUIBase
 {
     public static final String NAME = "grated_hopper";
-    public static final int GUI_ID = VoxenRegistry.nextGUIID();
+    public static final int GUI_ID = RegistrationHandler.nextGUIID();
     public static final PropertyDirection FACING = PropertyDirection.create("facing", (@Nullable EnumFacing face) -> face != EnumFacing.UP);
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
     
@@ -67,6 +67,12 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
         this.item = new ItemBlock(this);
         this.item.setUnlocalizedName(this.getUnlocalizedName());
         this.item.setRegistryName(this.getRegistryName());
+    }
+    
+    @Override
+    public String getName()
+    {
+        return NAME;
     }
 
     @Override
@@ -242,7 +248,7 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public void registerBlock(VoxenRegistry registry)
+    public void registerBlock(RegistrationHandler registry)
     {
         SimpleFactory.PROXY.registerBlockStateMap(this, (new StateMap.Builder()).ignore(ENABLED).build());
         registry.registerBlock(this);
@@ -251,13 +257,13 @@ public class GratedHopperBlock extends Block implements BlockBase, GUIBase
     }
     
     @Override
-    public void registerItem(VoxenRegistry registry)
+    public void registerItem(RegistrationHandler registry)
     {
         registry.registerItem(item);
     }
     
     @Override
-    public void registerRenderer(VoxenRegistry registry)
+    public void registerRenderer(RegistrationHandler registry)
     {
         //registry.registerItemRenderer(item, NAME);
     }

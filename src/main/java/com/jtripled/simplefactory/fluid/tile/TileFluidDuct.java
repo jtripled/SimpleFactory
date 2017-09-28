@@ -2,9 +2,6 @@ package com.jtripled.simplefactory.fluid.tile;
 
 import com.jtripled.simplefactory.blocks.ItemDuctBlock;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -18,49 +15,18 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
  */
 public class TileFluidDuct extends TileFluid implements ITickable
 {
-    private int transferCooldown;
     private EnumFacing previous;
     
     public TileFluidDuct()
     {
         super(Fluid.BUCKET_VOLUME * 1);
-        this.transferCooldown = -1;
         this.previous = EnumFacing.EAST;
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
-    {
-        compound.setInteger("transferCooldown", transferCooldown);
-        return super.writeToNBT(compound);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound compound)
-    {
-        transferCooldown = compound.getInteger("transferCooldown");
-        super.readFromNBT(compound);
     }
     
     @Override
     public void update()
     {
-        if (world != null && !world.isRemote)
-        {
-            --transferCooldown;
-            if (transferCooldown <= 0)
-            {
-                transferCooldown = 0;
-                boolean flag = false;
-                if (tank.getFluidAmount() > 0)
-                    flag = transferOut();
-                if (flag)
-                {
-                    transferCooldown = 8;
-                    this.markDirty();
-                }
-            }
-        }
+        updateTransfer();
     }
     
     private static EnumFacing getNextFacing(EnumFacing previous, IBlockState state)
@@ -68,18 +34,12 @@ public class TileFluidDuct extends TileFluid implements ITickable
         EnumFacing[] next;
         switch (previous)
         {
-            case DOWN:
-                next = new EnumFacing[] { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN }; break;
-            case UP:
-                next = new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.UP }; break;
-            case NORTH:
-                next = new EnumFacing[] { EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH }; break;
-            case SOUTH:
-                next = new EnumFacing[] { EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH }; break;
-            case WEST:
-                next = new EnumFacing[] { EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST }; break;
-            default:
-                next = EnumFacing.values(); break;
+            case DOWN: next = new EnumFacing[] { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN }; break;
+            case UP: next = new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.UP }; break;
+            case NORTH: next = new EnumFacing[] { EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH }; break;
+            case SOUTH: next = new EnumFacing[] { EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH }; break;
+            case WEST: next = new EnumFacing[] { EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST }; break;
+            default: next = EnumFacing.values(); break;
         }
         for (EnumFacing face : next)
         {
@@ -87,24 +47,19 @@ public class TileFluidDuct extends TileFluid implements ITickable
             {
                 switch (face)
                 {
-                    case DOWN:
-                        if (state.getValue(ItemDuctBlock.DOWN)) return face; break;
-                    case UP:
-                        if (state.getValue(ItemDuctBlock.UP)) return face; break;
-                    case NORTH:
-                        if (state.getValue(ItemDuctBlock.NORTH)) return face; break;
-                    case SOUTH:
-                        if (state.getValue(ItemDuctBlock.SOUTH)) return face; break;
-                    case WEST:
-                        if (state.getValue(ItemDuctBlock.WEST)) return face; break;
-                    default:
-                        if (state.getValue(ItemDuctBlock.EAST)) return EnumFacing.EAST; break;
+                    case DOWN: if (state.getValue(ItemDuctBlock.DOWN)) return face; break;
+                    case UP: if (state.getValue(ItemDuctBlock.UP)) return face; break;
+                    case NORTH: if (state.getValue(ItemDuctBlock.NORTH)) return face; break;
+                    case SOUTH: if (state.getValue(ItemDuctBlock.SOUTH)) return face; break;
+                    case WEST: if (state.getValue(ItemDuctBlock.WEST)) return face; break;
+                    default: if (state.getValue(ItemDuctBlock.EAST)) return EnumFacing.EAST; break;
                 }
             }
         }
         return null;
     }
     
+    @Override
     public boolean transferOut()
     {
         EnumFacing next = getNextFacing(previous, world.getBlockState(pos).getActualState(world, pos));

@@ -13,10 +13,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -72,12 +69,6 @@ public class BlockPump extends BlockFluid
         if (flag != ((boolean)state.getValue(ENABLED)))
             worldIn.setBlockState(pos, state.withProperty(ENABLED, flag), 4);
     }
-    
-    @Override
-    public EnumBlockRenderType getRenderType(IBlockState state)
-    {
-        return EnumBlockRenderType.MODEL;
-    }
 
     @Override
     public boolean isFullCube(IBlockState state)
@@ -89,16 +80,6 @@ public class BlockPump extends BlockFluid
     public boolean isOpaqueCube(IBlockState state)
     {
         return false;
-    }
-
-    public static EnumFacing getFacing(int meta)
-    {
-        return EnumFacing.getFront(meta & 7);
-    }
-
-    public static boolean isEnabled(int meta)
-    {
-        return (meta & 8) != 8;
     }
 
     @SideOnly(Side.CLIENT)
@@ -118,7 +99,7 @@ public class BlockPump extends BlockFluid
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(FACING, getFacing(meta)).withProperty(ENABLED, isEnabled(meta));
+        return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(ENABLED, (meta & 8) != 8);
     }
 
     @Override
@@ -129,18 +110,6 @@ public class BlockPump extends BlockFluid
         if (!((boolean)state.getValue(ENABLED)))
             i |= 8;
         return i;
-    }
-
-    @Override
-    public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
-    }
-
-    @Override
-    public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-    {
-        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
     }
 
     @Override
