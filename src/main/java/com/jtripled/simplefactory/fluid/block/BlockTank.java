@@ -166,6 +166,7 @@ public class BlockTank extends BlockFluid
             if (!world.isRemote)
             {
                 SimpleFactory.NETWORK.sendToAll(new TankResizeMessage(baseTank.getPos(), baseTank.tank.getCapacity()));
+                SimpleFactory.NETWORK.sendToAll(new FluidMessage(baseTank.getPos(), baseTank.tank.getFluid()));
             }
         }
         else if (up)

@@ -62,7 +62,7 @@ public class TileFluid extends TileEntity implements IFluidHandler
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? (T)this
-                : (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this.hasBucketSlot()) ? (T)input
+                : capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this.hasBucketSlot() ? (T)input
                 : super.getCapability(capability, facing);
     }
 

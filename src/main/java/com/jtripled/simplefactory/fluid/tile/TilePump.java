@@ -68,7 +68,7 @@ public class TilePump extends TileFluid implements ITickable
                 {
                     if (tank.getFluid() == null || tank.getFluid().getFluid() == fromFluid)
                     {
-                        fill(new FluidStack(fromFluid, 100), true);
+                        fill(new FluidStack(fromFluid, 1000), true);
                         return true;
                     }
                 }

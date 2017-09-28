@@ -1,12 +1,7 @@
 package com.jtripled.simplefactory;
 
-import com.jtripled.simplefactory.fluid.block.BlockFluidDuct;
-import com.jtripled.simplefactory.fluid.block.BlockPump;
-import com.jtripled.simplefactory.fluid.block.BlockTank;
-import com.jtripled.simplefactory.fluid.network.FluidMessage;
-import com.jtripled.simplefactory.fluid.network.FluidMessageHandler;
-import com.jtripled.simplefactory.fluid.network.TankResizeMessage;
-import com.jtripled.simplefactory.fluid.network.TankResizeMessageHandler;
+import com.jtripled.simplefactory.fluid.block.*;
+import com.jtripled.simplefactory.fluid.network.*;
 import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.registry.Registry;
 import com.jtripled.voxen.registry.RegistrationHandler;

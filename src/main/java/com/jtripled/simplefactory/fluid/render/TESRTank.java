@@ -45,12 +45,12 @@ public class TESRTank extends TileEntitySpecialRenderer<TileTank>
             else GL11.glShadeModel(GL11.GL_FLAT);
             bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             TextureAtlasSprite texture = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(fluid.getStill().toString());
-            double h;
-            double f = down ? 0 : 0.001;
-            if (up)
-                h = ((double) level / 16000d);
-            else
-                h = ((double) level / 16000d) - 0.001d;
+            double yMax = up ? ((double) level / 16000d) : ((double) level / 16000d) - 0.001d;
+            double yMin = down ? 0 : 0.001;
+            double xMin = 0.001;
+            double xMax = 0.999;
+            double zMin = 0.001;
+            double zMax = 0.999;
             int color = fluid.getColor();
             int brightness = Minecraft.getMinecraft().world.getCombinedLight(new BlockPos(x, y, z), fluid.getLuminosity());
             int l1 = brightness >> 0x10 & 0xFFFF;
@@ -72,31 +72,31 @@ public class TESRTank extends TileEntitySpecialRenderer<TileTank>
             
             if (renderTop)
             {
-                buff.pos(0.001, h, 0.999).color(r, g, b, a).tex(uMin, vMax).lightmap(l1, l2).endVertex();
-                buff.pos(0.999, h, 0.999).color(r, g, b, a).tex(uMax, vMax).lightmap(l1, l2).endVertex();
-                buff.pos(0.999, h, 0.001).color(r, g, b, a).tex(uMax, vMin).lightmap(l1, l2).endVertex();
-                buff.pos(0.001, h, 0.001).color(r, g, b, a).tex(uMin, vMin).lightmap(l1, l2).endVertex();
+                buff.pos(xMin, yMax, zMax).color(r, g, b, a).tex(uMin, vMax).lightmap(l1, l2).endVertex();
+                buff.pos(xMax, yMax, zMax).color(r, g, b, a).tex(uMax, vMax).lightmap(l1, l2).endVertex();
+                buff.pos(xMax, yMax, zMin).color(r, g, b, a).tex(uMax, vMin).lightmap(l1, l2).endVertex();
+                buff.pos(xMin, yMax, zMin).color(r, g, b, a).tex(uMin, vMin).lightmap(l1, l2).endVertex();
             }
             
-            buff.pos(0.999, f, 0.999).color(r, g, b, a).tex(uMin, vMax).lightmap(l1, l2).endVertex();
-            buff.pos(0.999, h, 0.999).color(r, g, b, a).tex(uMid, vMax).lightmap(l1, l2).endVertex();
-            buff.pos(0.001, h, 0.999).color(r, g, b, a).tex(uMid, vMin).lightmap(l1, l2).endVertex();
-            buff.pos(0.001, f, 0.999).color(r, g, b, a).tex(uMin, vMin).lightmap(l1, l2).endVertex();
+            buff.pos(xMax, yMin, zMax).color(r, g, b, a).tex(uMin, vMax).lightmap(l1, l2).endVertex();
+            buff.pos(xMax, yMax, zMax).color(r, g, b, a).tex(uMid, vMax).lightmap(l1, l2).endVertex();
+            buff.pos(xMin, yMax, zMax).color(r, g, b, a).tex(uMid, vMin).lightmap(l1, l2).endVertex();
+            buff.pos(xMin, yMin, zMax).color(r, g, b, a).tex(uMin, vMin).lightmap(l1, l2).endVertex();
 
-            buff.pos(0.001, f, 0.001).color(r, g, b, a).tex(uMin, vMin).lightmap(l1, l2).endVertex();
-            buff.pos(0.001, h, 0.001).color(r, g, b, a).tex(uMid, vMin).lightmap(l1, l2).endVertex();
-            buff.pos(0.999, h, 0.001).color(r, g, b, a).tex(uMid, vMax).lightmap(l1, l2).endVertex();
-            buff.pos(0.999, f, 0.001).color(r, g, b, a).tex(uMin, vMax).lightmap(l1, l2).endVertex();
+            buff.pos(xMin, yMin, zMin).color(r, g, b, a).tex(uMin, vMin).lightmap(l1, l2).endVertex();
+            buff.pos(xMin, yMax, zMin).color(r, g, b, a).tex(uMid, vMin).lightmap(l1, l2).endVertex();
+            buff.pos(xMax, yMax, zMin).color(r, g, b, a).tex(uMid, vMax).lightmap(l1, l2).endVertex();
+            buff.pos(xMax, yMin, zMin).color(r, g, b, a).tex(uMin, vMax).lightmap(l1, l2).endVertex();
 
-            buff.pos(0.999, f, 0.001).color(r, g, b, a).tex(uMin, vMin).lightmap(l1, l2).endVertex();
-            buff.pos(0.999, h, 0.001).color(r, g, b, a).tex(uMid, vMin).lightmap(l1, l2).endVertex();
-            buff.pos(0.999, h, 0.999).color(r, g, b, a).tex(uMid, vMax).lightmap(l1, l2).endVertex();
-            buff.pos(0.999, f, 0.999).color(r, g, b, a).tex(uMin, vMax).lightmap(l1, l2).endVertex();
+            buff.pos(xMax, yMin, zMin).color(r, g, b, a).tex(uMin, vMin).lightmap(l1, l2).endVertex();
+            buff.pos(xMax, yMax, zMin).color(r, g, b, a).tex(uMid, vMin).lightmap(l1, l2).endVertex();
+            buff.pos(xMax, yMax, zMax).color(r, g, b, a).tex(uMid, vMax).lightmap(l1, l2).endVertex();
+            buff.pos(xMax, yMin, zMax).color(r, g, b, a).tex(uMin, vMax).lightmap(l1, l2).endVertex();
 
-            buff.pos(0.001, f, 0.999).color(r, g, b, a).tex(uMin, vMax).lightmap(l1, l2).endVertex();
-            buff.pos(0.001, h, 0.999).color(r, g, b, a).tex(uMid, vMax).lightmap(l1, l2).endVertex();
-            buff.pos(0.001, h, 0.001).color(r, g, b, a).tex(uMid, vMin).lightmap(l1, l2).endVertex();
-            buff.pos(0.001, f, 0.001).color(r, g, b, a).tex(uMin, vMin).lightmap(l1, l2).endVertex();
+            buff.pos(xMin, yMin, zMax).color(r, g, b, a).tex(uMin, vMax).lightmap(l1, l2).endVertex();
+            buff.pos(xMin, yMax, zMax).color(r, g, b, a).tex(uMid, vMax).lightmap(l1, l2).endVertex();
+            buff.pos(xMin, yMax, zMin).color(r, g, b, a).tex(uMid, vMin).lightmap(l1, l2).endVertex();
+            buff.pos(xMin, yMin, zMin).color(r, g, b, a).tex(uMin, vMin).lightmap(l1, l2).endVertex();
             
             tess.draw();
             buff.setTranslation(0, 0, 0);

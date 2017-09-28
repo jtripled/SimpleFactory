@@ -42,19 +42,19 @@ public class TileTank extends TileFluid
     
     public TileTank getBaseTank()
     {
-        if (baseTank == null)
-        {
+        //if (baseTank == null)
+        //{
             BlockPos next = pos;
             TileEntity test = world.getTileEntity(next);
             TileTank base = null;
-            while (test != null && test instanceof TileTank && next.getY() >= 0)
+            while (test instanceof TileTank && next.getY() >= 0)
             {
                 base = (TileTank) test;
                 next = next.down();
                 test = world.getTileEntity(next);
             }
             baseTank = base;
-        }
+        //}
         return baseTank;
     }
     
