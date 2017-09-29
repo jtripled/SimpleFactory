@@ -2,10 +2,12 @@ package com.jtripled.simplefactory.fluid.tile;
 
 import com.jtripled.simplefactory.fluid.block.BlockFluidDuct;
 import com.jtripled.simplefactory.item.block.BlockItemDuct;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -22,6 +24,19 @@ public class TileFluidDuct extends TileFluid implements ITickable
     {
         super(Fluid.BUCKET_VOLUME * 1);
         this.previous = EnumFacing.EAST;
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing == getFacing(this);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing == getFacing(this) ? (T)this : null;
     }
     
     @Override
@@ -67,10 +82,10 @@ public class TileFluidDuct extends TileFluid implements ITickable
         if (next == null)
             return false;
         TileEntity testTile = world.getTileEntity(pos.offset(next));
-        if (testTile != null && testTile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
+        if (testTile != null && testTile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, next.getOpposite()))
         {
             previous = next;
-            IFluidHandler nextInventory = testTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+            IFluidHandler nextInventory = testTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, next.getOpposite());
             int amount = nextInventory.fill(drain(400, false), false);
             if (tank.getFluidAmount() > 0 && amount > 0)
             {
@@ -80,5 +95,10 @@ public class TileFluidDuct extends TileFluid implements ITickable
             return false;
         }
         return false;
+    }
+    
+    public static EnumFacing getFacing(TileFluidDuct tile)
+    {
+        return tile.world.getBlockState(tile.getPos()).getValue(BlockFluidDuct.FACING);
     }
 }

@@ -2,10 +2,13 @@ package com.jtripled.simplefactory.item.tile;
 
 import com.jtripled.simplefactory.item.block.BlockGratedHopper;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -41,6 +44,21 @@ public class TileGratedHopper extends TileItem implements ITickable
             }
         };
     }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP)
+                || super.hasCapability(capability, facing);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        return (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP)
+                ? (T)inventory : super.getCapability(capability, facing);
+    }
     
     @Override
     public boolean hasFilter()
@@ -71,10 +89,11 @@ public class TileGratedHopper extends TileItem implements ITickable
     @Override
     public boolean transferOut()
     {
-        TileEntity testTile = world.getTileEntity(pos.offset(BlockGratedHopper.getFacing(this.getBlockMetadata())));
-        if (testTile != null && testTile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+        EnumFacing face = BlockGratedHopper.getFacing(this.getBlockMetadata());
+        TileEntity testTile = world.getTileEntity(pos.offset(face));
+        if (testTile != null && testTile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face.getOpposite()))
         {
-            IItemHandler nextInventory = testTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            IItemHandler nextInventory = testTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face.getOpposite());
             for (int i = 0; i < inventory.getSlots(); i++)
             {
                 ItemStack outStack = inventory.getStackInSlot(i);
@@ -87,8 +106,11 @@ public class TileGratedHopper extends TileItem implements ITickable
                         if (inStack.isEmpty() || (inStack.getCount() < inStack.getMaxStackSize()
                                 && outStack.getItem() == inStack.getItem()))
                         {
-                            nextInventory.insertItem(j, inventory.extractItem(i, 1, false), false);
-                            return true;
+                            if (nextInventory.insertItem(j, inventory.extractItem(i, 1, true), true) == ItemStack.EMPTY)
+                            {
+                                nextInventory.insertItem(j, inventory.extractItem(i, 1, false), false);
+                                return true;
+                            }
                         }
                     }
                 }
@@ -102,9 +124,9 @@ public class TileGratedHopper extends TileItem implements ITickable
     public boolean transferIn()
     {
         TileEntity testTile = world.getTileEntity(pos.up());
-        if (!this.isFull() && testTile != null && testTile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+        if (!this.isFull() && testTile != null && testTile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN))
         {
-            IItemHandler handler = testTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            IItemHandler handler = testTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN);
             ItemStack inStack;
             for (int i = 0; i < inventory.getSlots(); i++)
             {

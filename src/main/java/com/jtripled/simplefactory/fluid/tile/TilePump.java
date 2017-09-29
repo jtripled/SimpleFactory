@@ -1,12 +1,14 @@
 package com.jtripled.simplefactory.fluid.tile;
 
 import com.jtripled.simplefactory.fluid.block.BlockPump;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -31,6 +33,19 @@ public class TilePump extends TileFluid implements ITickable
         if (world.getBlockState(pos).getValue(BlockPump.ENABLED))
             updateTransfer();
     }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing == EnumFacing.UP;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing == EnumFacing.UP ? (T)this : null;
+    }
     
     @Override
     public boolean hasBucketSlot()
@@ -41,10 +56,11 @@ public class TilePump extends TileFluid implements ITickable
     @Override
     public boolean transferOut()
     {
-        TileEntity testTile = world.getTileEntity(pos.offset(EnumFacing.getFront(getBlockMetadata() & 7)));
-        if (testTile != null && testTile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
+        EnumFacing face = EnumFacing.getFront(getBlockMetadata() & 7);
+        TileEntity testTile = world.getTileEntity(pos.offset(face));
+        if (testTile != null && testTile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face.getOpposite()))
         {
-            IFluidHandler nextInventory = testTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+            IFluidHandler nextInventory = testTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face.getOpposite());
             int amount = nextInventory.fill(drain(400, false), false);
             if (tank.getFluidAmount() > 0 && amount > 0)
             {
@@ -89,9 +105,9 @@ public class TilePump extends TileFluid implements ITickable
             else
             {
                 TileEntity tileAbove = world.getTileEntity(above);
-                if (tileAbove != null && tileAbove.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
+                if (tileAbove != null && tileAbove.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.DOWN))
                 {
-                    IFluidHandler handler = tileAbove.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+                    IFluidHandler handler = tileAbove.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.DOWN);
                     FluidStack drained = handler.drain(400, false);
                     if (drained != null && (tank.getFluid() == null || drained.getFluid() == tank.getFluid().getFluid()))
                     {

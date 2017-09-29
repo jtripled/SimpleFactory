@@ -109,18 +109,18 @@ public class BlockFluidDuct extends BlockFluid
     public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos)
     {
         EnumFacing facing = ((EnumFacing)state.getValue(FACING));
-        return state.withProperty(NORTH, canConnect(state, world, pos.north()) && facing != EnumFacing.NORTH)
-             .withProperty(EAST, canConnect(state, world, pos.east()) && facing != EnumFacing.EAST)
-             .withProperty(SOUTH, canConnect(state, world, pos.south()) && facing != EnumFacing.SOUTH)
-             .withProperty(WEST, canConnect(state, world, pos.west()) && facing != EnumFacing.WEST)
-             .withProperty(UP, canConnect(state, world, pos.up()) && facing != EnumFacing.UP)
-             .withProperty(DOWN, canConnect(state, world, pos.down()) && facing != EnumFacing.DOWN);
+        return state.withProperty(NORTH, canConnect(state, world, pos.north(), EnumFacing.SOUTH) && facing != EnumFacing.NORTH)
+             .withProperty(EAST, canConnect(state, world, pos.east(), EnumFacing.WEST) && facing != EnumFacing.EAST)
+             .withProperty(SOUTH, canConnect(state, world, pos.south(), EnumFacing.NORTH) && facing != EnumFacing.SOUTH)
+             .withProperty(WEST, canConnect(state, world, pos.west(), EnumFacing.EAST) && facing != EnumFacing.WEST)
+             .withProperty(UP, canConnect(state, world, pos.up(), EnumFacing.DOWN) && facing != EnumFacing.UP)
+             .withProperty(DOWN, canConnect(state, world, pos.down(), EnumFacing.UP) && facing != EnumFacing.DOWN);
     }
     
-    public boolean canConnect(IBlockState state, IBlockAccess world, BlockPos pos)
+    public boolean canConnect(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing facing)
     {
         TileEntity tile = world.getTileEntity(pos);
-        return tile != null && tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        return tile != null && tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
     }
     
     @Override

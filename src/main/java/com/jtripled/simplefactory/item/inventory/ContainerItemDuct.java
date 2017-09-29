@@ -6,7 +6,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -22,7 +21,7 @@ public class ContainerItemDuct extends Container
     public ContainerItemDuct(TileItemDuct tile, InventoryPlayer playerInv)
     {
         this.tile = tile;
-        IItemHandler inventory = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
+        IItemHandler inventory = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, TileItemDuct.getFacing(tile));
         addSlotToContainer(new SlotItemHandler(inventory, 0, 80, 18) {
             @Override
             public void onSlotChanged() {
