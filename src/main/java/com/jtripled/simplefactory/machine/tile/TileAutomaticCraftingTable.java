@@ -1,6 +1,8 @@
 package com.jtripled.simplefactory.machine.tile;
 
 import javax.annotation.Nullable;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -18,6 +20,7 @@ import net.minecraftforge.items.ItemStackHandler;
 public class TileAutomaticCraftingTable extends TileEntity implements ITickable
 {
     private final ItemStackHandler inventory;
+    private WorkbenchCrafting crafting;
     
     public TileAutomaticCraftingTable()
     {
@@ -81,6 +84,17 @@ public class TileAutomaticCraftingTable extends TileEntity implements ITickable
     public void update()
     {
         
+    }
+    
+    public static class WorkbenchCrafting extends InventoryCrafting
+    {
+        private final ItemStackHandler blueprint;
+        
+        public WorkbenchCrafting(ItemStackHandler blueprint, int width, int height)
+        {
+            super(null, width, height);
+            this.blueprint = blueprint;
+        }
     }
     
     public static class AutomaticCraftingTableItemHandler extends ItemStackHandler
