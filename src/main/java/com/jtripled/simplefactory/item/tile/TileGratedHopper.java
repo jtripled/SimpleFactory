@@ -1,13 +1,14 @@
 package com.jtripled.simplefactory.item.tile;
 
 import com.jtripled.simplefactory.item.block.BlockGratedHopper;
+import com.jtripled.voxen.tile.ITransferable;
+import com.jtripled.voxen.tile.TileBase;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -17,9 +18,11 @@ import net.minecraftforge.items.ItemStackHandler;
  *
  * @author jtripled
  */
-public class TileGratedHopper extends TileItem implements ITickable
+public class TileGratedHopper extends TileBase implements ITransferable
 {
     public final ItemStackHandler filter;
+    protected ItemStackHandler inventory;
+    private int transferCooldown;
     
     public TileGratedHopper()
     {
@@ -58,13 +61,11 @@ public class TileGratedHopper extends TileItem implements ITickable
                 ? (T)inventory : null;
     }
     
-    @Override
-    public boolean hasFilter()
+    public IItemHandler getInventory()
     {
-        return true;
+        return inventory;
     }
     
-    @Override
     public IItemHandler getFilter()
     {
         return filter;
@@ -73,6 +74,7 @@ public class TileGratedHopper extends TileItem implements ITickable
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
+        writeTransferCooldown(compound);
         compound.setTag("filter", filter.serializeNBT());
         return super.writeToNBT(compound);
     }
@@ -80,8 +82,53 @@ public class TileGratedHopper extends TileItem implements ITickable
     @Override
     public void readFromNBT(NBTTagCompound compound)
     {
+        readTransferCooldown(compound);
         filter.deserializeNBT(compound.getCompoundTag("filter"));
         super.readFromNBT(compound);
+    }
+    
+    @Override
+    public int getTransferCooldown()
+    {
+        return transferCooldown;
+    }
+    
+    @Override
+    public void setTransferCooldown(int cooldown)
+    {
+        transferCooldown = cooldown;
+    }
+
+    public boolean isEmpty()
+    {
+        for (int i = 0; i < inventory.getSlots(); i++)
+            if (!inventory.getStackInSlot(i).isEmpty())
+                return false;
+        return true;
+    }
+
+    public boolean isFull()
+    {
+        ItemStack stack;
+        for (int i = 0; i < inventory.getSlots(); i++)
+        {
+            stack = inventory.getStackInSlot(i);
+            if (stack.isEmpty() || stack.getCount() < stack.getMaxStackSize())
+                return false;
+        }
+        return true;
+    }
+    
+    @Override
+    public boolean canTransferOut()
+    {
+        return !isEmpty();
+    }
+    
+    @Override
+    public boolean canTransferIn()
+    {
+        return !isFull();
     }
     
     @Override
@@ -122,7 +169,7 @@ public class TileGratedHopper extends TileItem implements ITickable
     public boolean transferIn()
     {
         TileEntity testTile = world.getTileEntity(pos.up());
-        if (!this.isFull() && testTile != null && testTile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN))
+        if (testTile != null && testTile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN))
         {
             IItemHandler handler = testTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN);
             ItemStack inStack;

@@ -3,6 +3,8 @@ package com.jtripled.simplefactory.item.block;
 import com.jtripled.simplefactory.item.inventory.ContainerGratedHopper;
 import com.jtripled.simplefactory.item.inventory.GUIGratedHopper;
 import com.jtripled.simplefactory.item.tile.TileGratedHopper;
+import com.jtripled.voxen.block.BlockBase;
+import com.jtripled.voxen.gui.GUIBase;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -33,7 +35,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author jtripled
  */
-public class BlockGratedHopper extends BlockItem
+public class BlockGratedHopper extends BlockBase implements GUIBase
 {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", (@Nullable EnumFacing face) -> face != EnumFacing.UP);
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
