@@ -1,6 +1,7 @@
 {
-    "parent": "block/cube_all",
+    "parent": "block/cube_column",
     "textures": {
-        "all": "simplefactory:block/fluid_tank"
+        "end": "blocks/iron_block",
+        "side": "simplefactory:block/fluid_tank"
     }
 }
