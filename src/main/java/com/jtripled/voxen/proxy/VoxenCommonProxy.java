@@ -1,6 +1,5 @@
 package com.jtripled.voxen.proxy;
 
-import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.item.ItemBase;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
@@ -11,6 +10,7 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import com.jtripled.voxen.block.IBlockBase;
 
 /**
  *
@@ -58,7 +58,7 @@ public class VoxenCommonProxy
         
     }
     
-    public void registerBlockStateMap(BlockBase block, IStateMapper map)
+    public void registerBlockStateMap(IBlockBase block, IStateMapper map)
     {
         
     }

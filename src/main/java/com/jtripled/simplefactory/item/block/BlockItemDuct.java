@@ -1,20 +1,20 @@
 package com.jtripled.simplefactory.item.block;
 
+import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.simplefactory.item.inventory.ContainerItemDuct;
 import com.jtripled.simplefactory.item.inventory.GUIItemDuct;
+import com.jtripled.simplefactory.item.tile.TileItem;
 import com.jtripled.simplefactory.item.tile.TileItemDuct;
+import com.jtripled.voxen.block.BlockDuct;
+import com.jtripled.voxen.gui.GUIBase;
+import com.jtripled.voxen.registry.RegistrationHandler;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -24,112 +24,38 @@ import net.minecraftforge.items.CapabilityItemHandler;
  *
  * @author jtripled
  */
-public class BlockItemDuct extends BlockItem
+public class BlockItemDuct extends BlockDuct implements GUIBase
 {
-    public static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(0.3125, 0.3125, 0.3125, 0.6875, 0.6875, 0.6875);
-    public static final PropertyEnum<EnumFacing> FACING = PropertyEnum.<EnumFacing>create("facing", EnumFacing.class);
-    public static final PropertyBool NORTH = PropertyBool.create("north");
-    public static final PropertyBool EAST = PropertyBool.create("east");
-    public static final PropertyBool SOUTH = PropertyBool.create("south");
-    public static final PropertyBool WEST = PropertyBool.create("west");
-    public static final PropertyBool UP = PropertyBool.create("up");
-    public static final PropertyBool DOWN = PropertyBool.create("down");
+    private final int guiID;
     
     public BlockItemDuct()
     {
         super(Material.IRON, "item_duct");
         this.setCreativeTab(CreativeTabs.REDSTONE);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false).withProperty(UP, false).withProperty(DOWN, false));
+        this.guiID = RegistrationHandler.nextGUIID();
+        this.setItem();
     }
 
     @Override
-    protected BlockStateContainer createBlockState()
+    public int getGUIID()
     {
-        return new BlockStateContainer(this, new IProperty[] {FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN});
+        return guiID;
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta)
+    public void openGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state)
-    {
-        return ((EnumFacing)state.getValue(FACING)).getIndex();
-    }
-
-    @Override
-    public boolean isFullCube(IBlockState state)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isOpaqueCube(IBlockState state)
-    {
-        return false;
+        player.openGui(SimpleFactory.INSTANCE, guiID, world, x, y, z);
     }
     
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos)
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        AxisAlignedBB bb = BOUNDING_BOX;
-        state = getActualState(state, world, pos);
-        boolean north = state.getValue(NORTH);
-        boolean east = state.getValue(EAST);
-        boolean south = state.getValue(SOUTH);
-        boolean west = state.getValue(WEST);
-        boolean up = state.getValue(UP);
-        boolean down = state.getValue(DOWN);
-        switch(state.getValue(FACING))
+        if (!world.isRemote)
         {
-            case NORTH: north = true; break;
-            case EAST: east = true; break;
-            case SOUTH: south = true; break;
-            case WEST: west = true; break;
-            case UP: up = true; break;
-            case DOWN: down = true; break;
+            openGUI(player, world, pos.getX(), pos.getY(), pos.getZ());
         }
-        if (south) bb = bb.expand( 0,       0,      0.3125);
-        if (north) bb = bb.expand( 0,       0,     -0.3125);
-        if (east)  bb = bb.expand( 0.3125,  0,      0);
-        if (west)  bb = bb.expand(-0.3125,  0,      0);
-        if (up)    bb = bb.expand( 0,       0.3125, 0);
-        if (down)  bb = bb.expand( 0,      -0.3125, 0);
-        return bb;
-    }
-    
-    @Override
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
-        IBlockState state = this.getDefaultState().withProperty(FACING, facing.getOpposite());
-        return state;
-    }
-    
-    @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos)
-    {
-        EnumFacing facing = ((EnumFacing)state.getValue(FACING));
-        return state.withProperty(NORTH, canConnect(state, world, pos.north(), EnumFacing.SOUTH) && facing != EnumFacing.NORTH)
-             .withProperty(EAST, canConnect(state, world, pos.east(), EnumFacing.WEST) && facing != EnumFacing.EAST)
-             .withProperty(SOUTH, canConnect(state, world, pos.south(), EnumFacing.NORTH) && facing != EnumFacing.SOUTH)
-             .withProperty(WEST, canConnect(state, world, pos.west(), EnumFacing.EAST) && facing != EnumFacing.WEST)
-             .withProperty(UP, canConnect(state, world, pos.up(), EnumFacing.DOWN) && facing != EnumFacing.UP)
-             .withProperty(DOWN, canConnect(state, world, pos.down(), EnumFacing.UP) && facing != EnumFacing.DOWN);
-    }
-    
-    public boolean canConnect(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing facing)
-    {
-        TileEntity tile = world.getTileEntity(pos);
-        return tile != null && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
-    }
-    
-    @Override
-    public Class<? extends TileEntity> getTileClass()
-    {
-        return TileItemDuct.class;
+        return true;
     }
 
     @Override
@@ -144,8 +70,33 @@ public class BlockItemDuct extends BlockItem
         return new GUIItemDuct((ContainerItemDuct) getServerGUI(player, world, x, y, z));
     }
     
+    @Override
+    public Class<? extends TileEntity> getTileClass()
+    {
+        return TileItemDuct.class;
+    }
+    
+    @Override
+    public boolean hasTileEntity(IBlockState state)
+    {
+        return true;
+    }
+    
+    @Override
+    public TileItemDuct createTileEntity(World world, IBlockState state)
+    {
+        return new TileItemDuct();
+    }
+    
     public static EnumFacing getFacing(IBlockState state)
     {
         return state.getValue(FACING);
+    }
+
+    @Override
+    public boolean canConnect(IBlockState state, IBlockAccess world, BlockPos otherPos, EnumFacing otherFacing)
+    {
+        TileEntity tile = world.getTileEntity(otherPos);
+        return tile != null && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, otherFacing);
     }
 }

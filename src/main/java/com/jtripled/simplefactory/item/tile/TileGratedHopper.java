@@ -20,7 +20,6 @@ import net.minecraftforge.items.ItemStackHandler;
 public class TileGratedHopper extends TileItem implements ITickable
 {
     public final ItemStackHandler filter;
-    private int transferCooldown;
     
     public TileGratedHopper()
     {
@@ -48,8 +47,7 @@ public class TileGratedHopper extends TileItem implements ITickable
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP)
-                || super.hasCapability(capability, facing);
+        return (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP);
     }
 
     @Nullable
@@ -57,7 +55,7 @@ public class TileGratedHopper extends TileItem implements ITickable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
         return (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP)
-                ? (T)inventory : super.getCapability(capability, facing);
+                ? (T)inventory : null;
     }
     
     @Override

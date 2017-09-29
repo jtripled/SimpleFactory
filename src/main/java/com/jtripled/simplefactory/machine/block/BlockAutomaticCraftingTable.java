@@ -2,7 +2,6 @@ package com.jtripled.simplefactory.machine.block;
 
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.simplefactory.machine.tile.TileAutomaticCraftingTable;
-import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBlockBase;
 import com.jtripled.voxen.registry.RegistrationHandler;
@@ -17,12 +16,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import com.jtripled.voxen.block.IBlockBase;
 
 /**
  *
  * @author jtripled
  */
-public class BlockAutomaticCraftingTable extends Block implements BlockBase, GUIBase
+public class BlockAutomaticCraftingTable extends Block implements IBlockBase, GUIBase
 {
     public static final String NAME = "automatic_crafting_table";
     public static ItemBlockBase ITEM;

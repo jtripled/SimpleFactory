@@ -2,7 +2,6 @@ package com.jtripled.simplefactory.item.block;
 
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.simplefactory.item.tile.TileItem;
-import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBase;
 import com.jtripled.voxen.item.ItemBlockBase;
@@ -17,12 +16,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import com.jtripled.voxen.block.IBlockBase;
 
 /**
  *
  * @author jtripled
  */
-public abstract class BlockItem extends Block implements BlockBase, GUIBase
+public abstract class BlockItem extends Block implements IBlockBase, GUIBase
 {
     private final int guiID;
     private final ItemBlockBase item;

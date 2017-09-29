@@ -1,12 +1,12 @@
 package com.jtripled.voxen.registry;
 
-import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.entity.EntityBase;
 import com.jtripled.voxen.item.ItemBase;
 import com.jtripled.voxen.mod.VoxenMod;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.relauncher.Side;
+import com.jtripled.voxen.block.IBlockBase;
 
 /**
  *
@@ -22,7 +22,7 @@ public abstract class Registry
     
     public void onRegisterMessages(RegistrationHandler registry) {}
     
-    public final void registerBlock(BlockBase block)
+    public final void registerBlock(IBlockBase block)
     {
         VoxenMod.REGISTRATION_HANDLER.addBlock(block);
     }

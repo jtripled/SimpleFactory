@@ -1,6 +1,5 @@
 package com.jtripled.voxen.registry;
 
-import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.entity.EntityBase;
 import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBase;
@@ -30,6 +29,7 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistry;
+import com.jtripled.voxen.block.IBlockBase;
 
 /**
  *
@@ -38,14 +38,14 @@ import net.minecraftforge.registries.IForgeRegistry;
 @Mod.EventBusSubscriber
 public class RegistrationHandler implements IGuiHandler
 {
-    private final List<BlockBase> BLOCKS = new ArrayList<>();
+    private final List<IBlockBase> BLOCKS = new ArrayList<>();
     private final List<ItemBase> ITEMS = new ArrayList<>();
     private final List<EntityBase> ENTITIES = new ArrayList<>();
     private IForgeRegistry<Block> blockRegistry;
     private IForgeRegistry<Item> itemRegistry;
     private IForgeRegistry<EntityEntry> entityRegistry;
     
-    protected void addBlock(BlockBase block)
+    protected void addBlock(IBlockBase block)
     {
         BLOCKS.add(block);
     }
@@ -64,22 +64,22 @@ public class RegistrationHandler implements IGuiHandler
      * Block registration hooks.
      */
     
-    public void registerBlock(BlockBase block)
+    public void registerBlock(IBlockBase block)
     {
         blockRegistry.register((Block) block);
     }
     
-    public void registerTileEntity(BlockBase block, Class<? extends TileEntity> tileClass)
+    public void registerTileEntity(IBlockBase block, Class<? extends TileEntity> tileClass)
     {
         GameRegistry.registerTileEntity(tileClass, ((Block) block).getRegistryName().toString());
     }
     
-    public void registerIgnoredProperties(BlockBase block, IProperty... properties)
+    public void registerIgnoredProperties(IBlockBase block, IProperty... properties)
     {
         VoxenMod.PROXY.registerBlockStateMap(block, (new StateMap.Builder()).ignore(properties).build());
     }
     
-    public void registerTileRenderer(BlockBase block, TileEntitySpecialRenderer tesr)
+    public void registerTileRenderer(IBlockBase block, TileEntitySpecialRenderer tesr)
     {
         VoxenMod.PROXY.registerTileRenderer(block.getTileClass(), tesr);
     }
@@ -200,7 +200,7 @@ public class RegistrationHandler implements IGuiHandler
     
     public void onRegisterRenderers()
     {
-        for (BlockBase block : BLOCKS)
+        for (IBlockBase block : BLOCKS)
             block.registerRenderer(this);
     }
 }

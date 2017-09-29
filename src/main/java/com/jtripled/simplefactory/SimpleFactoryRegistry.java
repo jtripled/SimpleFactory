@@ -3,10 +3,10 @@ package com.jtripled.simplefactory;
 import com.jtripled.simplefactory.item.block.*;
 import com.jtripled.simplefactory.fluid.block.*;
 import com.jtripled.simplefactory.fluid.network.*;
-import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.registry.Registry;
 import com.jtripled.voxen.registry.RegistrationHandler;
 import net.minecraftforge.fml.relauncher.Side;
+import com.jtripled.voxen.block.IBlockBase;
 
 /**
  *
@@ -14,12 +14,12 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public class SimpleFactoryRegistry extends Registry
 {
-    public static final BlockBase FLUID_DUCT = new BlockFluidDuct();
-    public static final BlockBase PUMP = new BlockPump();
-    public static final BlockBase TANK = new BlockTank();
+    public static final IBlockBase FLUID_DUCT = new BlockFluidDuct();
+    public static final IBlockBase PUMP = new BlockPump();
+    public static final IBlockBase TANK = new BlockTank();
     
-    public static final BlockBase GRATED_HOPPER = new BlockGratedHopper();
-    public static final BlockBase ITEM_DUCT = new BlockItemDuct();
+    public static final IBlockBase GRATED_HOPPER = new BlockGratedHopper();
+    public static final IBlockBase ITEM_DUCT = new BlockItemDuct();
     
     @Override
     public void onRegisterBlocks(RegistrationHandler registry)

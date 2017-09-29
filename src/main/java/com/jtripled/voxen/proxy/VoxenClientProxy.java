@@ -1,6 +1,5 @@
 package com.jtripled.voxen.proxy;
 
-import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.item.ItemBase;
 import com.jtripled.voxen.mod.VoxenMod;
 import net.minecraft.block.Block;
@@ -16,6 +15,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import com.jtripled.voxen.block.IBlockBase;
 
 
 /**
@@ -73,7 +73,7 @@ public class VoxenClientProxy extends VoxenCommonProxy
     }
 
     @Override
-    public void registerBlockStateMap(BlockBase block, IStateMapper map)
+    public void registerBlockStateMap(IBlockBase block, IStateMapper map)
     {
         ModelLoader.setCustomStateMapper((Block) block, map);
     }

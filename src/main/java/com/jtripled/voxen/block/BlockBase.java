@@ -1,72 +1,51 @@
 package com.jtripled.voxen.block;
 
-import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBase;
-import com.jtripled.voxen.registry.RegistrationHandler;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
+import com.jtripled.voxen.item.ItemBlockBase;
+import com.jtripled.voxen.mod.VoxenMod;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.Material;
+import net.minecraft.util.ResourceLocation;
 
 /**
  *
  * @author jtripled
  */
-public interface BlockBase
+public class BlockBase extends Block implements IBlockBase
 {
-    public String getName();
+    private final String name;
+    private ItemBlockBase item;
 
-    public default Class<? extends TileEntity> getTileClass()
+    public BlockBase(Material material, String name)
     {
-        return null;
+        this(material, material.getMaterialMapColor(), name);
     }
 
-    public default ItemBase getItem()
+    public BlockBase(Material material, MapColor mapColor, String name)
     {
-        return null;
+        super(material, mapColor);
+        this.name = name;
+        this.setUnlocalizedName(name);
+        this.setRegistryName(new ResourceLocation(VoxenMod.ID, name));
     }
 
-    public default TileEntitySpecialRenderer getTESR()
+    @Override
+    public String getName()
     {
-        return null;
+        return name;
     }
     
-    public default IProperty[] getIgnoredProperties()
+    public void setItem()
     {
-        return null;
+        this.item = new ItemBlockBase(this);
+        this.item.setUnlocalizedName(this.getUnlocalizedName());
+        this.item.setRegistryName(this.getRegistryName());
     }
     
-    public default void registerBlock(RegistrationHandler registry)
+    @Override
+    public ItemBase getItem()
     {
-        registry.registerBlock(this);
-        if (getTileClass() != null)
-        {
-            registry.registerTileEntity(this, getTileClass());
-            TileEntitySpecialRenderer tesr = getTESR();
-            if (tesr != null)
-            {
-                registry.registerTileRenderer(this, tesr);
-            }
-        }
-        if (this instanceof GUIBase)
-        {
-            registry.registerGUI((GUIBase) this);
-        }
-        if (getIgnoredProperties() != null)
-        {
-            registry.registerIgnoredProperties(this, getIgnoredProperties());
-        }
-    }
-
-    public default void registerItem(RegistrationHandler registry)
-    {
-        if (getItem() != null)
-            registry.registerItem(getItem());
-    }
-
-    public default void registerRenderer(RegistrationHandler registry)
-    {
-        if (getItem() != null)
-            registry.registerItemRenderer(getItem(), getName());
+        return item;
     }
 }

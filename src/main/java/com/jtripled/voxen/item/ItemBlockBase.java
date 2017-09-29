@@ -1,8 +1,8 @@
 package com.jtripled.voxen.item;
 
-import com.jtripled.voxen.block.BlockBase;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
+import com.jtripled.voxen.block.IBlockBase;
 
 /**
  *
@@ -10,9 +10,9 @@ import net.minecraft.item.ItemBlock;
  */
 public class ItemBlockBase extends ItemBlock implements ItemBase
 {
-    private final BlockBase blockBase;
+    private final IBlockBase blockBase;
     
-    public ItemBlockBase(BlockBase block)
+    public ItemBlockBase(IBlockBase block)
     {
         super((Block) block);
         this.blockBase = block;

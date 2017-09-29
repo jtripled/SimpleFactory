@@ -1,15 +1,9 @@
 package com.jtripled.simplefactory.item.tile;
 
-import javax.annotation.Nullable;
+import com.jtripled.voxen.tile.ITransferable;
+import com.jtripled.voxen.tile.TileBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -17,7 +11,7 @@ import net.minecraftforge.items.ItemStackHandler;
  *
  * @author jtripled
  */
-public class TileItem extends TileEntity implements ITickable
+public class TileItem extends TileBase implements ITransferable
 {
     protected ItemStackHandler inventory;
     private int transferCooldown;
@@ -46,7 +40,7 @@ public class TileItem extends TileEntity implements ITickable
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
-        compound.setInteger("transferCooldown", transferCooldown);
+        writeTransferCooldown(compound);
         compound.setTag("inventory", inventory.serializeNBT());
         return super.writeToNBT(compound);
     }
@@ -54,56 +48,9 @@ public class TileItem extends TileEntity implements ITickable
     @Override
     public void readFromNBT(NBTTagCompound compound)
     {
-        transferCooldown = compound.getInteger("transferCooldown");
+        readTransferCooldown(compound);
         inventory.deserializeNBT(compound.getCompoundTag("inventory"));
         super.readFromNBT(compound);
-    }
-    
-    @Override
-    public void onDataPacket(NetworkManager network, SPacketUpdateTileEntity packet)
-    {
-        readFromNBT(packet.getNbtCompound());
-    }
-    
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        return new SPacketUpdateTileEntity(getPos(), 1, getUpdateTag());
-    }
-    
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        return writeToNBT(super.getUpdateTag());
-    }
-    
-    @Override
-    public void handleUpdateTag(NBTTagCompound compound)
-    {
-        readFromNBT(compound);
-    }
-    
-    @Override
-    public void update()
-    {
-        if (world != null && !world.isRemote)
-        {
-            --transferCooldown;
-            if (transferCooldown <= 0)
-            {
-                transferCooldown = 0;
-                boolean flag = false;
-                if (!this.isEmpty())
-                    flag = transferOut();
-                if (!this.isFull())
-                    flag = transferIn() || flag;
-                if (flag)
-                {
-                    transferCooldown = 8;
-                    this.markDirty();
-                }
-            }
-        }
     }
 
     public boolean isEmpty()
@@ -126,13 +73,27 @@ public class TileItem extends TileEntity implements ITickable
         return true;
     }
     
-    public boolean transferOut()
+    @Override
+    public boolean canTransferOut()
     {
-        return false;
+        return !isEmpty();
     }
     
-    public boolean transferIn()
+    @Override
+    public boolean canTransferIn()
     {
-        return false;
+        return !isFull();
+    }
+
+    @Override
+    public int getTransferCooldown()
+    {
+        return transferCooldown;
+    }
+
+    @Override
+    public void setTransferCooldown(int cooldown)
+    {
+        transferCooldown = cooldown;
     }
 }

@@ -4,7 +4,6 @@ import com.jtripled.simplefactory.fluid.inventory.GUIFluid;
 import com.jtripled.simplefactory.fluid.inventory.ContainerFluid;
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.simplefactory.fluid.tile.TileFluid;
-import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBase;
 import com.jtripled.voxen.item.ItemBlockBase;
@@ -22,12 +21,13 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidTank;
+import com.jtripled.voxen.block.IBlockBase;
 
 /**
  *
  * @author jtripled
  */
-public abstract class BlockFluid extends Block implements BlockBase, GUIBase
+public abstract class BlockFluid extends Block implements IBlockBase, GUIBase
 {
     private final int guiID;
     private final ItemBlockBase item;

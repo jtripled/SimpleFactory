@@ -29,8 +29,7 @@ public class TileItemDuct extends TileItem
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == getFacing(this))
-                || super.hasCapability(capability, facing);
+        return (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == getFacing(this));
     }
 
     @Nullable
@@ -38,7 +37,7 @@ public class TileItemDuct extends TileItem
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
         return (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == getFacing(this))
-                ? (T)inventory : super.getCapability(capability, facing);
+                ? (T)inventory : null;
     }
 
     @Override
