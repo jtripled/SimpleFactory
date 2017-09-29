@@ -34,11 +34,6 @@ public interface ITransferable extends ITickable
         }
     }
     
-    public default TileEntity getTile()
-    {
-        return (TileEntity) this;
-    }
-    
     public default int getRate()
     {
         return 8;

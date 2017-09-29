@@ -1,6 +1,8 @@
 package com.jtripled.simplefactory.item.tile;
 
-import com.jtripled.simplefactory.item.block.BlockItemDuct;
+import com.jtripled.voxen.block.IBlockDuct;
+import com.jtripled.voxen.tile.ITransferable;
+import com.jtripled.voxen.tile.TileBase;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
@@ -16,14 +18,17 @@ import net.minecraftforge.items.ItemStackHandler;
  *
  * @author jtripled
  */
-public class TileItemDuct extends TileItem
+public class TileItemDuct extends TileBase implements ITransferable
 {
+    private final ItemStackHandler inventory;
     private EnumFacing previous;
+    private int transferCooldown;
     
     public TileItemDuct()
     {
         this.previous = EnumFacing.EAST;
         this.inventory = new ItemStackHandler(1);
+        this.transferCooldown = -1;
     }
 
     @Override
@@ -43,15 +48,37 @@ public class TileItemDuct extends TileItem
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
+        writeTransferCooldown(compound);
         compound.setInteger("previous", previous.getIndex());
+        compound.setTag("inventory", inventory.serializeNBT());
         return super.writeToNBT(compound);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound)
     {
+        readTransferCooldown(compound);
         previous = EnumFacing.getFront(compound.getInteger("previous"));
+        inventory.deserializeNBT(compound.getCompoundTag("inventory"));
         super.readFromNBT(compound);
+    }
+
+    @Override
+    public int getTransferCooldown()
+    {
+        return transferCooldown;
+    }
+
+    @Override
+    public void setTransferCooldown(int cooldown)
+    {
+        transferCooldown = cooldown;
+    }
+    
+    @Override
+    public boolean canTransferOut()
+    {
+        return !inventory.getStackInSlot(0).isEmpty();
     }
     
     @Override
@@ -102,16 +129,16 @@ public class TileItemDuct extends TileItem
         }
         for (EnumFacing face : next)
         {
-            if (face != state.getValue(BlockItemDuct.FACING))
+            if (face != state.getValue(IBlockDuct.FACING))
             {
                 switch (face)
                 {
-                    case DOWN: if (state.getValue(BlockItemDuct.DOWN)) return face; break;
-                    case UP: if (state.getValue(BlockItemDuct.UP)) return face; break;
-                    case NORTH: if (state.getValue(BlockItemDuct.NORTH)) return face; break;
-                    case SOUTH: if (state.getValue(BlockItemDuct.SOUTH)) return face; break;
-                    case WEST: if (state.getValue(BlockItemDuct.WEST)) return face; break;
-                    default: if (state.getValue(BlockItemDuct.EAST)) return EnumFacing.EAST; break;
+                    case DOWN: if (state.getValue(IBlockDuct.DOWN)) return face; break;
+                    case UP: if (state.getValue(IBlockDuct.UP)) return face; break;
+                    case NORTH: if (state.getValue(IBlockDuct.NORTH)) return face; break;
+                    case SOUTH: if (state.getValue(IBlockDuct.SOUTH)) return face; break;
+                    case WEST: if (state.getValue(IBlockDuct.WEST)) return face; break;
+                    default: if (state.getValue(IBlockDuct.EAST)) return EnumFacing.EAST; break;
                 }
             }
         }
@@ -120,6 +147,6 @@ public class TileItemDuct extends TileItem
     
     public static EnumFacing getFacing(TileItemDuct tile)
     {
-        return tile.world.getBlockState(tile.getPos()).getValue(BlockItemDuct.FACING);
+        return tile.world.getBlockState(tile.getPos()).getValue(IBlockDuct.FACING);
     }
 }
