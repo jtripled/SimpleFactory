@@ -4,9 +4,9 @@ import com.jtripled.simplefactory.fluid.block.BlockFluidDuct;
 import com.jtripled.simplefactory.item.block.BlockItemDuct;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -16,7 +16,8 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
  *
  * @author jtripled
  */
-public class TileFluidDuct extends TileFluid implements ITickable
+public class TileFluidDuct extends TileFluid
+        
 {
     private EnumFacing previous;
     
@@ -38,11 +39,47 @@ public class TileFluidDuct extends TileFluid implements ITickable
     {
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing == getFacing(this) ? (T)this : null;
     }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    {
+        compound.setInteger("previous", previous.getIndex());
+        return super.writeToNBT(compound);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound)
+    {
+        previous = EnumFacing.getFront(compound.getInteger("previous"));
+        super.readFromNBT(compound);
+    }
     
     @Override
-    public void update()
+    public boolean canTransferOut()
     {
-        updateTransfer();
+        return this.getInternalTank().getFluidAmount() > 0;
+    }
+    
+    @Override
+    public boolean transferOut()
+    {
+        EnumFacing next = getNextFacing(previous, world.getBlockState(pos).getActualState(world, pos));
+        if (next == null)
+            return false;
+        TileEntity testTile = world.getTileEntity(pos.offset(next));
+        if (testTile != null && testTile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, next.getOpposite()))
+        {
+            previous = next;
+            IFluidHandler nextInventory = testTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, next.getOpposite());
+            int amount = nextInventory.fill(drain(400, false), false);
+            if (tank.getFluidAmount() > 0 && amount > 0)
+            {
+                nextInventory.fill(drain(amount, true), true);
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
     
     private static EnumFacing getNextFacing(EnumFacing previous, IBlockState state)
@@ -73,28 +110,6 @@ public class TileFluidDuct extends TileFluid implements ITickable
             }
         }
         return null;
-    }
-    
-    @Override
-    public boolean transferOut()
-    {
-        EnumFacing next = getNextFacing(previous, world.getBlockState(pos).getActualState(world, pos));
-        if (next == null)
-            return false;
-        TileEntity testTile = world.getTileEntity(pos.offset(next));
-        if (testTile != null && testTile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, next.getOpposite()))
-        {
-            previous = next;
-            IFluidHandler nextInventory = testTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, next.getOpposite());
-            int amount = nextInventory.fill(drain(400, false), false);
-            if (tank.getFluidAmount() > 0 && amount > 0)
-            {
-                nextInventory.fill(drain(amount, true), true);
-                return true;
-            }
-            return false;
-        }
-        return false;
     }
     
     public static EnumFacing getFacing(TileFluidDuct tile)

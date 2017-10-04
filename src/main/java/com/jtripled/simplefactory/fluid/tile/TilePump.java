@@ -1,18 +1,17 @@
 package com.jtripled.simplefactory.fluid.tile;
 
-import com.jtripled.simplefactory.fluid.block.BlockPump;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
@@ -20,18 +19,11 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
  *
  * @author jtripled
  */
-public class TilePump extends TileFluid implements ITickable
+public class TilePump extends TileFluid
 {
     public TilePump()
     {
         super(Fluid.BUCKET_VOLUME * 8);
-    }
-    
-    @Override
-    public void update()
-    {
-        if (world.getBlockState(pos).getValue(BlockPump.ENABLED))
-            updateTransfer();
     }
 
     @Override
@@ -51,6 +43,19 @@ public class TilePump extends TileFluid implements ITickable
     public boolean hasBucketSlot()
     {
         return true;
+    }
+    
+    @Override
+    public boolean canTransferOut()
+    {
+        return this.getInternalTank().getFluidAmount() > 0;
+    }
+    
+    @Override
+    public boolean canTransferIn()
+    {
+        FluidTank internal = this.getInternalTank();
+        return internal.getFluidAmount() < internal.getCapacity();
     }
     
     @Override

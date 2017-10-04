@@ -26,11 +26,28 @@ public class TileGratedHopper extends TileBase implements ITransferable
     
     public TileGratedHopper()
     {
+        TileEntity tile = this;
         this.filter = new ItemStackHandler(5) {
             @Override
             public int getSlotLimit(int slot)
             {
                 return 1;
+            }
+            @Nonnull
+            @Override
+            public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
+            {
+                this.setStackInSlot(slot, stack);
+                tile.markDirty();
+                return stack;
+            }
+            @Nonnull
+            @Override
+            public ItemStack extractItem(int slot, int amount, boolean simulate)
+            {
+                this.setStackInSlot(slot, ItemStack.EMPTY);
+                tile.markDirty();
+                return ItemStack.EMPTY;
             }
         };
         this.inventory = new ItemStackHandler(5) {

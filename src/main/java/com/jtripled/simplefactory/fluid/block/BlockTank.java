@@ -5,6 +5,7 @@ import com.jtripled.simplefactory.fluid.render.TESRTank;
 import com.jtripled.simplefactory.fluid.tile.TileTank;
 import com.jtripled.simplefactory.fluid.network.FluidMessage;
 import com.jtripled.simplefactory.fluid.network.TankResizeMessage;
+import com.jtripled.voxen.block.BlockBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -27,7 +28,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author jtripled
  */
-public class BlockTank extends BlockFluid
+public class BlockTank extends BlockBase
 {
     public static final PropertyBool UP = PropertyBool.create("up");
     public static final PropertyBool DOWN = PropertyBool.create("down");
@@ -36,6 +37,7 @@ public class BlockTank extends BlockFluid
     {
         super(Material.IRON, "tank");
         this.setCreativeTab(CreativeTabs.REDSTONE);
+        this.setItem();
         this.setDefaultState(this.blockState.getBaseState().withProperty(UP, false).withProperty(DOWN, false));
     }
     

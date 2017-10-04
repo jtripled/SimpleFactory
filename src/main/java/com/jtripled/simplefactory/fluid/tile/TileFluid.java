@@ -2,23 +2,17 @@ package com.jtripled.simplefactory.fluid.tile;
 
 import com.jtripled.simplefactory.fluid.network.FluidMessage;
 import com.jtripled.simplefactory.SimpleFactory;
+import com.jtripled.voxen.tile.ITransferable;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -26,7 +20,7 @@ import net.minecraftforge.items.ItemStackHandler;
  *
  * @author jtripled
  */
-public class TileFluid extends TileEntity implements IFluidHandler
+public class TileFluid extends TileEntity implements IFluidHandler, ITransferable
 {
     public FluidTank tank;
     private int transferCooldown;
@@ -50,28 +44,10 @@ public class TileFluid extends TileEntity implements IFluidHandler
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY
-                || (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this.hasBucketSlot())
-                || super.hasCapability(capability, facing);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? (T)this
-                : capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this.hasBucketSlot() ? (T)input
-                : super.getCapability(capability, facing);
-    }
-
-    @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         tank.writeToNBT(compound);
-        if (transferCooldown != -1)
-            compound.setInteger("transferCooldown", transferCooldown);
+        this.writeTransferCooldown(compound);
         if (hasBucketSlot())
         {
             compound.setTag("input", input.serializeNBT());
@@ -84,38 +60,13 @@ public class TileFluid extends TileEntity implements IFluidHandler
     public void readFromNBT(NBTTagCompound compound)
     {
         tank.readFromNBT(compound);
-        if (compound.hasKey("transferCooldown"))
-            transferCooldown = compound.getInteger("transferCooldown");
+        this.readTransferCooldown(compound);
         if (compound.hasKey("input"))
         {
             input.deserializeNBT(compound.getCompoundTag("input"));
             output.deserializeNBT(compound.getCompoundTag("output"));
         }
         super.readFromNBT(compound);
-    }
-    
-    @Override
-    public void onDataPacket(NetworkManager network, SPacketUpdateTileEntity packet)
-    {
-        readFromNBT(packet.getNbtCompound());
-    }
-    
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        return new SPacketUpdateTileEntity(getPos(), 1, getUpdateTag());
-    }
-    
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        return writeToNBT(super.getUpdateTag());
-    }
-    
-    @Override
-    public void handleUpdateTag(NBTTagCompound compound)
-    {
-        readFromNBT(compound);
     }
     
     public boolean hasBucketSlot()
@@ -141,38 +92,6 @@ public class TileFluid extends TileEntity implements IFluidHandler
     public BlockPos getInternalTankPos()
     {
         return pos;
-    }
-    
-    public void updateTransfer()
-    {
-        if (world != null && !world.isRemote)
-        {
-            --transferCooldown;
-            if (transferCooldown <= 0)
-            {
-                transferCooldown = 0;
-                boolean flag = false;
-                if (tank.getFluidAmount() > 0)
-                    flag = transferOut();
-                if (tank.getFluidAmount() < tank.getCapacity())
-                    flag = transferIn() || flag;
-                if (flag)
-                {
-                    transferCooldown = 8;
-                    this.markDirty();
-                }
-            }
-        }
-    }
-    
-    public boolean transferOut()
-    {
-        return false;
-    }
-    
-    public boolean transferIn()
-    {
-        return false;
     }
     
     @Override
@@ -215,6 +134,18 @@ public class TileFluid extends TileEntity implements IFluidHandler
             SimpleFactory.NETWORK.sendToAll(new FluidMessage(getInternalTankPos(), internalTank.getFluid()));
         }
         return drained;
+    }
+
+    @Override
+    public int getTransferCooldown()
+    {
+        return transferCooldown;
+    }
+
+    @Override
+    public void setTransferCooldown(int cooldown)
+    {
+        transferCooldown = cooldown;
     }
     
     public static class BucketInventoryHandler extends ItemStackHandler

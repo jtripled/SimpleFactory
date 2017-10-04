@@ -78,7 +78,6 @@ public class BlockBase extends Block implements IBlockBase
     @Override
     public boolean hasTileEntity(IBlockState state)
     {
-        System.out.println(getTileClass().toString());
         return getTileClass() != null;
     }
     

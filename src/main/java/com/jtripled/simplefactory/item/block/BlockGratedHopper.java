@@ -50,6 +50,7 @@ public class BlockGratedHopper extends BlockBase implements GUIBase
     {
         super(Material.IRON, "grated_hopper");
         this.setCreativeTab(CreativeTabs.REDSTONE);
+        this.setItem();
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, true));
     }
 

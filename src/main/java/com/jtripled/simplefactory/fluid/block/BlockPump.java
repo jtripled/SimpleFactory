@@ -1,6 +1,7 @@
 package com.jtripled.simplefactory.fluid.block;
 
 import com.jtripled.simplefactory.fluid.tile.TilePump;
+import com.jtripled.voxen.block.BlockBase;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -24,7 +25,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author jtripled
  */
-public class BlockPump extends BlockFluid
+public class BlockPump extends BlockBase
 {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", (@Nullable EnumFacing face) -> face != EnumFacing.UP);
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
@@ -33,6 +34,7 @@ public class BlockPump extends BlockFluid
     {
         super(Material.IRON, "pump");
         this.setCreativeTab(CreativeTabs.REDSTONE);
+        this.setItem();
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, true));
     }
     
