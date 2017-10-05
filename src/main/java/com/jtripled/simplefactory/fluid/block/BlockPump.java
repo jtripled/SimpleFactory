@@ -1,7 +1,10 @@
 package com.jtripled.simplefactory.fluid.block;
 
+import com.jtripled.simplefactory.fluid.inventory.ContainerFluid;
+import com.jtripled.simplefactory.fluid.inventory.GUIFluid;
 import com.jtripled.simplefactory.fluid.tile.TilePump;
 import com.jtripled.voxen.block.BlockBase;
+import com.jtripled.voxen.gui.GUIBase;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -12,6 +15,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -25,7 +29,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author jtripled
  */
-public class BlockPump extends BlockBase
+public class BlockPump extends BlockBase implements GUIBase
 {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", (@Nullable EnumFacing face) -> face != EnumFacing.UP);
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
@@ -36,6 +40,18 @@ public class BlockPump extends BlockBase
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setItem();
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, true));
+    }
+
+    @Override
+    public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
+    {
+        return new ContainerFluid((TilePump) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
+    }
+
+    @Override
+    public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
+    {
+        return new GUIFluid((ContainerFluid) getServerGUI(player, world, x, y, z));
     }
     
     @Override

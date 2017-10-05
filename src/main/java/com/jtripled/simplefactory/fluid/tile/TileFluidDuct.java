@@ -30,14 +30,14 @@ public class TileFluidDuct extends TileFluid
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing == getFacing(this);
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && (facing == getFacing(this) || facing == null);
     }
 
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing == getFacing(this) ? (T)this : null;
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && (facing == getFacing(this) || facing == null) ? (T)this : null;
     }
 
     @Override

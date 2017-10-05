@@ -11,7 +11,6 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
@@ -29,14 +28,14 @@ public class TilePump extends TileFluid
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing == EnumFacing.UP;
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && (facing == EnumFacing.UP || facing == null);
     }
 
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing == EnumFacing.UP ? (T)this : null;
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && (facing == EnumFacing.UP || facing == null) ? (T)this : null;
     }
     
     @Override
@@ -54,8 +53,7 @@ public class TilePump extends TileFluid
     @Override
     public boolean canTransferIn()
     {
-        FluidTank internal = this.getInternalTank();
-        return internal.getFluidAmount() < internal.getCapacity();
+        return tank.getFluidAmount() < tank.getCapacity();
     }
     
     @Override

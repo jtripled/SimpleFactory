@@ -3,11 +3,11 @@ package com.jtripled.simplefactory.fluid.tile;
 import com.jtripled.simplefactory.fluid.network.FluidMessage;
 import com.jtripled.simplefactory.SimpleFactory;
 import com.jtripled.voxen.tile.ITransferable;
+import com.jtripled.voxen.tile.TileBase;
 import javax.annotation.Nonnull;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -20,7 +20,7 @@ import net.minecraftforge.items.ItemStackHandler;
  *
  * @author jtripled
  */
-public class TileFluid extends TileEntity implements IFluidHandler, ITransferable
+public class TileFluid extends TileBase implements IFluidHandler, ITransferable
 {
     public FluidTank tank;
     private int transferCooldown;

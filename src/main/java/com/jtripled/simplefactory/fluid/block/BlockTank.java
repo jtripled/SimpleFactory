@@ -1,11 +1,14 @@
 package com.jtripled.simplefactory.fluid.block;
 
 import com.jtripled.simplefactory.SimpleFactory;
+import com.jtripled.simplefactory.fluid.inventory.ContainerFluid;
+import com.jtripled.simplefactory.fluid.inventory.GUIFluid;
 import com.jtripled.simplefactory.fluid.render.TESRTank;
 import com.jtripled.simplefactory.fluid.tile.TileTank;
 import com.jtripled.simplefactory.fluid.network.FluidMessage;
 import com.jtripled.simplefactory.fluid.network.TankResizeMessage;
 import com.jtripled.voxen.block.BlockBase;
+import com.jtripled.voxen.gui.GUIBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -13,6 +16,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
@@ -28,7 +32,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author jtripled
  */
-public class BlockTank extends BlockBase
+public class BlockTank extends BlockBase implements GUIBase
 {
     public static final PropertyBool UP = PropertyBool.create("up");
     public static final PropertyBool DOWN = PropertyBool.create("down");
@@ -44,6 +48,18 @@ public class BlockTank extends BlockBase
     /*
      * Block rendering and behaviour.
      */
+
+    @Override
+    public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
+    {
+        return new ContainerFluid((TileTank) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
+    }
+
+    @Override
+    public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
+    {
+        return new GUIFluid((ContainerFluid) getServerGUI(player, world, x, y, z));
+    }
     
     @Override
     public boolean isOpaqueCube(IBlockState state)
