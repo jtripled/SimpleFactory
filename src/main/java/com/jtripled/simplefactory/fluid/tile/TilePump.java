@@ -3,6 +3,7 @@ package com.jtripled.simplefactory.fluid.tile;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.item.ItemBucket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -13,6 +14,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 /**
  *
@@ -20,28 +22,32 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
  */
 public class TilePump extends TileFluid
 {
+    private int bucketCooldown;
+    
     public TilePump()
     {
         super(Fluid.BUCKET_VOLUME * 8);
-    }
-
-    @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && (facing == EnumFacing.UP || facing == null);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && (facing == EnumFacing.UP || facing == null) ? (T)this : null;
     }
     
     @Override
     public boolean hasBucketSlot()
     {
         return true;
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && (facing == EnumFacing.UP || facing == null)
+                || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && (facing != EnumFacing.UP || facing == null);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && (facing == EnumFacing.UP || facing == null) ? (T)this :
+                capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && (facing != EnumFacing.UP || facing == null) ? (T)input : null;
     }
     
     @Override
@@ -84,29 +90,31 @@ public class TilePump extends TileFluid
             Block aboveBlock = world.getBlockState(above).getBlock();
             if (aboveBlock instanceof BlockLiquid || aboveBlock instanceof BlockFluidBase)
             {
-                Fluid fromFluid = FluidRegistry.lookupFluidForBlock(aboveBlock);
-                if (fromFluid == FluidRegistry.WATER)
+                bucketCooldown += 2;
+                if (bucketCooldown >= 5)
                 {
-                    if (tank.getFluid() == null || tank.getFluid().getFluid() == fromFluid)
+                    bucketCooldown = 0;
+                    Fluid fromFluid = FluidRegistry.lookupFluidForBlock(aboveBlock);
+                    if (fromFluid == FluidRegistry.WATER)
                     {
-                        fill(new FluidStack(fromFluid, 1000), true);
-                        return true;
+                        fill(new FluidStack(fromFluid, 100), true);
+                    }
+                    else if (fromFluid != null && tank.getFluidAmount() <= tank.getCapacity() - Fluid.BUCKET_VOLUME)
+                    {
+                        if ((aboveBlock.getMetaFromState(world.getBlockState(above)) == 0
+                                && (tank.getFluid() == null || tank.getFluid().getFluid() == fromFluid))
+                                || (aboveBlock instanceof BlockFluidBase && aboveBlock.getMetaFromState(world.getBlockState(above)) == 15))
+                        {
+                            world.setBlockToAir(above);
+                            fill(new FluidStack(fromFluid, Fluid.BUCKET_VOLUME), true);
+                        }
                     }
                 }
-                else if (fromFluid != null && tank.getFluidAmount() <= tank.getCapacity() - Fluid.BUCKET_VOLUME)
-                {
-                    if ((aboveBlock.getMetaFromState(world.getBlockState(above)) == 0
-                            && (tank.getFluid() == null || tank.getFluid().getFluid() == fromFluid))
-                            || (aboveBlock instanceof BlockFluidBase && aboveBlock.getMetaFromState(world.getBlockState(above)) == 15))
-                    {
-                        world.setBlockToAir(above);
-                        fill(new FluidStack(fromFluid, Fluid.BUCKET_VOLUME), true);
-                        return true;
-                    }
-                }
+                return true;
             }
             else
             {
+                bucketCooldown = 0;
                 TileEntity tileAbove = world.getTileEntity(above);
                 if (tileAbove != null && tileAbove.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.DOWN))
                 {
