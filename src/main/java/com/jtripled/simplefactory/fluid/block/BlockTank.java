@@ -1,8 +1,8 @@
 package com.jtripled.simplefactory.fluid.block;
 
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.fluid.inventory.ContainerFluid;
-import com.jtripled.simplefactory.fluid.inventory.GUIFluid;
+import com.jtripled.simplefactory.fluid.inventory.ContainerTank;
+import com.jtripled.simplefactory.fluid.inventory.GUITank;
 import com.jtripled.simplefactory.fluid.render.TESRTank;
 import com.jtripled.simplefactory.fluid.tile.TileTank;
 import com.jtripled.simplefactory.fluid.network.FluidMessage;
@@ -52,13 +52,13 @@ public class BlockTank extends BlockBase implements GUIBase
     @Override
     public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return new ContainerFluid((TileTank) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
+        return new ContainerTank((TileTank) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
     }
 
     @Override
     public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return new GUIFluid((ContainerFluid) getServerGUI(player, world, x, y, z));
+        return new GUITank((ContainerTank) getServerGUI(player, world, x, y, z));
     }
     
     @Override

@@ -1,7 +1,7 @@
 package com.jtripled.simplefactory.fluid.block;
 
-import com.jtripled.simplefactory.fluid.inventory.ContainerFluid;
-import com.jtripled.simplefactory.fluid.inventory.GUIFluid;
+import com.jtripled.simplefactory.fluid.inventory.ContainerPump;
+import com.jtripled.simplefactory.fluid.inventory.GUIPump;
 import com.jtripled.simplefactory.fluid.tile.TilePump;
 import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.gui.GUIBase;
@@ -45,13 +45,13 @@ public class BlockPump extends BlockBase implements GUIBase
     @Override
     public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return new ContainerFluid((TilePump) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
+        return new ContainerPump((TilePump) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
     }
 
     @Override
     public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return new GUIFluid((ContainerFluid) getServerGUI(player, world, x, y, z));
+        return new GUIPump((ContainerPump) getServerGUI(player, world, x, y, z));
     }
     
     @Override

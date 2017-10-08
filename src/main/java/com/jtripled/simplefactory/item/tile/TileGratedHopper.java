@@ -20,8 +20,8 @@ import net.minecraftforge.items.ItemStackHandler;
  */
 public class TileGratedHopper extends TileBase implements ITransferable
 {
-    public final ItemStackHandler filter;
-    protected ItemStackHandler inventory;
+    private final ItemStackHandler filter;
+    private final ItemStackHandler inventory;
     private int transferCooldown;
     
     public TileGratedHopper()
@@ -33,20 +33,28 @@ public class TileGratedHopper extends TileBase implements ITransferable
             {
                 return 1;
             }
+            @Override
+            public void setStackInSlot(int slot, @Nonnull ItemStack stack)
+            {
+                validateSlotIndex(slot);
+                if (!stack.isEmpty())
+                    this.stacks.set(slot, stack);
+                onContentsChanged(slot);
+            }
             @Nonnull
             @Override
             public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
             {
-                this.setStackInSlot(slot, stack);
-                tile.markDirty();
+                this.stacks.set(slot, new ItemStack(stack.getItem(), 1));
+                onContentsChanged(slot);
                 return stack;
             }
             @Nonnull
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate)
             {
-                this.setStackInSlot(slot, ItemStack.EMPTY);
-                tile.markDirty();
+                this.stacks.set(slot, ItemStack.EMPTY);
+                onContentsChanged(slot);
                 return ItemStack.EMPTY;
             }
         };
@@ -67,14 +75,14 @@ public class TileGratedHopper extends TileBase implements ITransferable
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP);
+        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && (facing == EnumFacing.UP || facing == null);
     }
 
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        return (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP)
+        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && (facing == EnumFacing.UP || facing == null)
                 ? (T)inventory : null;
     }
     
@@ -93,6 +101,7 @@ public class TileGratedHopper extends TileBase implements ITransferable
     {
         writeTransferCooldown(compound);
         compound.setTag("filter", filter.serializeNBT());
+        compound.setTag("inventory", inventory.serializeNBT());
         return super.writeToNBT(compound);
     }
 
@@ -101,6 +110,7 @@ public class TileGratedHopper extends TileBase implements ITransferable
     {
         readTransferCooldown(compound);
         filter.deserializeNBT(compound.getCompoundTag("filter"));
+        inventory.deserializeNBT(compound.getCompoundTag("inventory"));
         super.readFromNBT(compound);
     }
     

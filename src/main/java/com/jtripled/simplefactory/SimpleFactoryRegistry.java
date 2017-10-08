@@ -37,5 +37,6 @@ public class SimpleFactoryRegistry extends Registry
     {
         registerMessage(FluidMessageHandler.class, FluidMessage.class, Side.CLIENT);
         registerMessage(TankResizeMessageHandler.class, TankResizeMessage.class, Side.CLIENT);
+        registerMessage(BucketCooldownMessageHandler.class, BucketCooldownMessage.class, Side.CLIENT);
     }
 }

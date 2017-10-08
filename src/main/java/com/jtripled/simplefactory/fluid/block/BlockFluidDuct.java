@@ -1,7 +1,7 @@
 package com.jtripled.simplefactory.fluid.block;
 
-import com.jtripled.simplefactory.fluid.inventory.ContainerFluid;
-import com.jtripled.simplefactory.fluid.inventory.GUIFluid;
+import com.jtripled.simplefactory.fluid.inventory.ContainerTank;
+import com.jtripled.simplefactory.fluid.inventory.GUITank;
 import com.jtripled.simplefactory.fluid.tile.TileFluidDuct;
 import com.jtripled.voxen.block.BlockDuct;
 import com.jtripled.voxen.gui.GUIBase;
@@ -32,13 +32,13 @@ public class BlockFluidDuct extends BlockDuct implements GUIBase
     @Override
     public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return new ContainerFluid((TileFluidDuct) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
+        return new ContainerTank((TileFluidDuct) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
     }
 
     @Override
     public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
     {
-        return new GUIFluid((ContainerFluid) getServerGUI(player, world, x, y, z));
+        return new GUITank((ContainerTank) getServerGUI(player, world, x, y, z));
     }
     
     @Override

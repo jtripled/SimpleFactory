@@ -1,7 +1,7 @@
 package com.jtripled.simplefactory.fluid.inventory;
 
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.fluid.tile.TileFluid;
+import com.jtripled.simplefactory.fluid.tile.TilePump;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -23,24 +23,21 @@ import net.minecraftforge.fluids.FluidTank;
  *
  * @author jtripled
  */
-public class GUIFluid extends GuiContainer
+public class GUIPump extends GuiContainer
 {
-    public static final ResourceLocation TANK_TEXTURE = new ResourceLocation(SimpleFactory.ID, "textures/gui/tank.png");
-    public static final ResourceLocation PUMP_TEXTURE = new ResourceLocation(SimpleFactory.ID, "textures/gui/pump.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(SimpleFactory.ID, "textures/gui/pump.png");
     
-    private final TileFluid tile;
+    private final TilePump tile;
     private final Container container;
-    private final boolean bucketSlot;
     private final String name;
     
-    public GUIFluid(ContainerFluid container)
+    public GUIPump(ContainerPump container)
     {
         super(container);
         this.tile = container.getTile();
         this.container = container;
-        this.bucketSlot = tile.hasBucketSlot();
         this.name = SimpleFactory.PROXY.localize(tile.getBlockType().getUnlocalizedName() + ".name");
-        this.ySize = 132 + (bucketSlot ? 18 : 0);
+        this.ySize = 150;
     }
     
     @Override
@@ -80,14 +77,12 @@ public class GUIFluid extends GuiContainer
     {
         drawDefaultBackground();
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-        mc.getTextureManager().bindTexture(bucketSlot ? PUMP_TEXTURE : TANK_TEXTURE);
+        mc.getTextureManager().bindTexture(TEXTURE);
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
         drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
-        if (bucketSlot)
-        {
-            // Draw progress arrow
-        }
+        int progress = (int) Math.ceil(22 * (25f - (float) tile.getBucketCooldown()) / 25);
+        drawTexturedModalRect(x + 77, y + 37, xSize, 0, progress, 16);
         FluidTank tank = tile.getInternalTank();
         FluidStack fluid = tank.getFluid();
         if (fluid != null)
@@ -114,7 +109,7 @@ public class GUIFluid extends GuiContainer
             }
             tessellator.draw();
         }
-        mc.getTextureManager().bindTexture(bucketSlot ? PUMP_TEXTURE : TANK_TEXTURE);
+        mc.getTextureManager().bindTexture(TEXTURE);
         drawTexturedModalRect(x + 17, y + 23, 0, 250, 141, 6);
     }
 }
