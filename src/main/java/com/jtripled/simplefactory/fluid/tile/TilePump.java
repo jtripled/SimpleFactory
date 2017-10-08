@@ -230,6 +230,7 @@ public class TilePump extends TileBase implements IFluidTank, ITransferable
                     output.insertItem(0, UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, tank.getFluid().getFluid()), false);
                     drain(Fluid.BUCKET_VOLUME, true);
                 }
+                return true;
             }
             else
             {
