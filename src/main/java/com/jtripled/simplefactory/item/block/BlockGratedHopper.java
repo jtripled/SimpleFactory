@@ -18,7 +18,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -185,16 +184,16 @@ public class BlockGratedHopper extends BlockBase implements GUIBase
     {
         return new IProperty[] {ENABLED};
     }
-
+    
     @Override
-    public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Class<ContainerGratedHopper> getContainerClass()
     {
-        return new ContainerGratedHopper((TileGratedHopper) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
+        return ContainerGratedHopper.class;
     }
-
+    
     @Override
-    public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Class<GUIGratedHopper> getGUIClass()
     {
-        return new GUIGratedHopper((ContainerGratedHopper) getServerGUI(player, world, x, y, z));
+        return GUIGratedHopper.class;
     }
 }

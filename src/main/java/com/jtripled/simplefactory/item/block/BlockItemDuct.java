@@ -30,17 +30,17 @@ public class BlockItemDuct extends BlockDuct implements GUIBase
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setItem();
     }
-
+    
     @Override
-    public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Class<ContainerItemDuct> getContainerClass()
     {
-        return new ContainerItemDuct((TileItemDuct) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
+        return ContainerItemDuct.class;
     }
-
+    
     @Override
-    public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Class<GUIItemDuct> getGUIClass()
     {
-        return new GUIItemDuct((ContainerItemDuct) getServerGUI(player, world, x, y, z));
+        return GUIItemDuct.class;
     }
     
     @Override

@@ -1,5 +1,7 @@
 package com.jtripled.simplefactory.fluid.tile;
 
+import com.jtripled.voxen.tile.IFluidTank;
+import com.jtripled.voxen.tile.TileBase;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -14,13 +16,14 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
  *
  * @author jtripled
  */
-public class TileTank extends TileFluid
+public class TileTank extends TileBase implements IFluidTank
 {
+    public FluidTank tank;
     public TileTank baseTank;
     
     public TileTank()
     {
-        super(Fluid.BUCKET_VOLUME * 16);
+        this.tank = new FluidTank(Fluid.BUCKET_VOLUME * 16);
         this.baseTank = null;
     }
 
@@ -42,6 +45,7 @@ public class TileTank extends TileFluid
     {
         if (getBaseTank() == this)
         {
+            writeInternalTank(compound);
             compound.setInteger("capacity", tank.getCapacity());
         }
         return super.writeToNBT(compound);
@@ -52,6 +56,7 @@ public class TileTank extends TileFluid
     {
         if (compound.hasKey("capacity"))
         {
+            readInternalTank(compound);
             tank.setCapacity(compound.getInteger("capacity"));
         }
         super.readFromNBT(compound);

@@ -1,6 +1,6 @@
 package com.jtripled.simplefactory.fluid.inventory;
 
-import com.jtripled.simplefactory.fluid.tile.TileTank;
+import com.jtripled.simplefactory.fluid.tile.TileFluidDuct;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -11,11 +11,11 @@ import net.minecraft.item.ItemStack;
  *
  * @author jtripled
  */
-public class ContainerTank extends Container
+public class ContainerFluidDuct extends Container
 {
-    protected final TileTank tile;
+    protected final TileFluidDuct tile;
     
-    public ContainerTank(TileTank tile, InventoryPlayer inventory)
+    public ContainerFluidDuct(TileFluidDuct tile, InventoryPlayer inventory)
     {
         this.tile = tile;
         for (int i = 0; i < 3; i++)
@@ -37,7 +37,7 @@ public class ContainerTank extends Container
         return true;
     }
     
-    public TileTank getTile()
+    public TileFluidDuct getTile()
     {
         return tile;
     }

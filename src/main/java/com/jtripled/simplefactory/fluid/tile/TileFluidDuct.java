@@ -2,13 +2,18 @@ package com.jtripled.simplefactory.fluid.tile;
 
 import com.jtripled.simplefactory.fluid.block.BlockFluidDuct;
 import com.jtripled.simplefactory.item.block.BlockItemDuct;
+import com.jtripled.voxen.tile.IFluidTank;
+import com.jtripled.voxen.tile.ITransferable;
+import com.jtripled.voxen.tile.TileBase;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
@@ -16,15 +21,17 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
  *
  * @author jtripled
  */
-public class TileFluidDuct extends TileFluid
-        
+public class TileFluidDuct extends TileBase implements IFluidTank, ITransferable
 {
+    private FluidTank tank;
     private EnumFacing previous;
+    private int transferCooldown;
     
     public TileFluidDuct()
     {
-        super(Fluid.BUCKET_VOLUME * 1);
+        this.tank = new FluidTank(Fluid.BUCKET_VOLUME * 1);
         this.previous = EnumFacing.EAST;
+        this.transferCooldown = -1;
     }
 
     @Override
@@ -43,6 +50,7 @@ public class TileFluidDuct extends TileFluid
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
+        writeInternalTank(compound);
         compound.setInteger("previous", previous.getIndex());
         return super.writeToNBT(compound);
     }
@@ -50,8 +58,33 @@ public class TileFluidDuct extends TileFluid
     @Override
     public void readFromNBT(NBTTagCompound compound)
     {
+        readInternalTank(compound);
         previous = EnumFacing.getFront(compound.getInteger("previous"));
         super.readFromNBT(compound);
+    }
+
+    @Override
+    public FluidTank getInternalTank()
+    {
+        return tank;
+    }
+
+    @Override
+    public BlockPos getInternalTankPos()
+    {
+        return pos;
+    }
+
+    @Override
+    public int getTransferCooldown()
+    {
+        return transferCooldown;
+    }
+
+    @Override
+    public void setTransferCooldown(int cooldown)
+    {
+        transferCooldown = cooldown;
     }
     
     @Override

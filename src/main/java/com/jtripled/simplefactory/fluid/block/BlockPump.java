@@ -1,7 +1,7 @@
 package com.jtripled.simplefactory.fluid.block;
 
 import com.jtripled.simplefactory.fluid.inventory.ContainerPump;
-import com.jtripled.simplefactory.fluid.inventory.GUIPump;
+import com.jtripled.simplefactory.fluid.gui.GUIPump;
 import com.jtripled.simplefactory.fluid.tile.TilePump;
 import com.jtripled.voxen.block.BlockBase;
 import com.jtripled.voxen.gui.GUIBase;
@@ -15,7 +15,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -41,17 +40,17 @@ public class BlockPump extends BlockBase implements GUIBase
         this.setItem();
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, true));
     }
-
+    
     @Override
-    public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Class<ContainerPump> getContainerClass()
     {
-        return new ContainerPump((TilePump) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
+        return ContainerPump.class;
     }
-
+    
     @Override
-    public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Class<GUIPump> getGUIClass()
     {
-        return new GUIPump((ContainerPump) getServerGUI(player, world, x, y, z));
+        return GUIPump.class;
     }
     
     @Override

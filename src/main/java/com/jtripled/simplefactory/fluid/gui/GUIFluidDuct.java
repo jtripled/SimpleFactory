@@ -1,7 +1,7 @@
-package com.jtripled.simplefactory.fluid.inventory;
+package com.jtripled.simplefactory.fluid.gui;
 
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.fluid.tile.TileFluid;
+import com.jtripled.simplefactory.fluid.inventory.ContainerFluidDuct;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -23,20 +22,20 @@ import net.minecraftforge.fluids.FluidTank;
  *
  * @author jtripled
  */
-public class GUITank extends GuiContainer
+public class GUIFluidDuct extends GuiContainer
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(SimpleFactory.ID, "textures/gui/tank.png");
     
-    private final TileFluid tile;
-    private final Container container;
+    private final ContainerFluidDuct container;
+    private final FluidTank tank;
     private final String name;
     
-    public GUITank(ContainerTank container)
+    public GUIFluidDuct(ContainerFluidDuct container)
     {
         super(container);
-        this.tile = container.getTile();
         this.container = container;
-        this.name = SimpleFactory.PROXY.localize(tile.getBlockType().getUnlocalizedName() + ".name");
+        this.tank = container.getTile().getInternalTank();
+        this.name = SimpleFactory.PROXY.localize(container.getTile().getBlockType().getUnlocalizedName() + ".name");
         this.ySize = 132;
     }
     
@@ -50,7 +49,6 @@ public class GUITank extends GuiContainer
         if (mouseX > x + 14 && mouseX < x + 161 && mouseY > y + 20 && mouseY < y + 32)
         {
             List<String> tooltip = new ArrayList<>();
-            FluidTank tank = tile.getInternalTank();
             FluidStack fluid = tank.getFluid();
             if (fluid == null)
             {
@@ -81,7 +79,6 @@ public class GUITank extends GuiContainer
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
         drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
-        FluidTank tank = tile.getInternalTank();
         FluidStack fluid = tank.getFluid();
         if (fluid != null)
         {

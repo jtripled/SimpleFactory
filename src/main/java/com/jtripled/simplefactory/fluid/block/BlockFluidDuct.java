@@ -1,19 +1,17 @@
 package com.jtripled.simplefactory.fluid.block;
 
-import com.jtripled.simplefactory.fluid.inventory.ContainerTank;
-import com.jtripled.simplefactory.fluid.inventory.GUITank;
+import com.jtripled.simplefactory.fluid.gui.GUIFluidDuct;
+import com.jtripled.simplefactory.fluid.inventory.ContainerFluidDuct;
 import com.jtripled.simplefactory.fluid.tile.TileFluidDuct;
 import com.jtripled.voxen.block.BlockDuct;
 import com.jtripled.voxen.gui.GUIBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 /**
@@ -28,23 +26,23 @@ public class BlockFluidDuct extends BlockDuct implements GUIBase
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setItem();
     }
-
+    
     @Override
-    public Object getServerGUI(EntityPlayer player, World world, int x, int y, int z)
+    public Class<TileFluidDuct> getTileClass()
     {
-        return new ContainerTank((TileFluidDuct) world.getTileEntity(new BlockPos(x, y, z)), player.inventory);
-    }
-
-    @Override
-    public Object getClientGUI(EntityPlayer player, World world, int x, int y, int z)
-    {
-        return new GUITank((ContainerTank) getServerGUI(player, world, x, y, z));
+        return TileFluidDuct.class;
     }
     
     @Override
-    public Class<? extends TileEntity> getTileClass()
+    public Class<ContainerFluidDuct> getContainerClass()
     {
-        return TileFluidDuct.class;
+        return ContainerFluidDuct.class;
+    }
+    
+    @Override
+    public Class<GUIFluidDuct> getGUIClass()
+    {
+        return GUIFluidDuct.class;
     }
 
     @Override
