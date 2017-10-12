@@ -1,11 +1,11 @@
 package com.jtripled.voxen.block;
 
-import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBase;
 import com.jtripled.voxen.registry.RegistrationHandler;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
+import com.jtripled.voxen.gui.GUIHolder;
 
 /**
  *
@@ -47,9 +47,9 @@ public interface IBlockBase
                 registry.registerTileRenderer(this, tesr);
             }
         }
-        if (this instanceof GUIBase)
+        if (this instanceof GUIHolder)
         {
-            registry.registerGUI((GUIBase) this);
+            registry.registerGUI((GUIHolder) this);
         }
         if (getIgnoredProperties() != null)
         {

@@ -1,10 +1,9 @@
 package com.jtripled.simplefactory.item.block;
 
-import com.jtripled.simplefactory.item.inventory.ContainerGratedHopper;
-import com.jtripled.simplefactory.item.inventory.GUIGratedHopper;
+import com.jtripled.simplefactory.item.container.ContainerGratedHopper;
+import com.jtripled.simplefactory.item.gui.GUIGratedHopper;
 import com.jtripled.simplefactory.item.tile.TileGratedHopper;
 import com.jtripled.voxen.block.BlockBase;
-import com.jtripled.voxen.gui.GUIBase;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -18,6 +17,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -29,12 +29,13 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import com.jtripled.voxen.gui.GUIHolder;
 
 /**
  *
  * @author jtripled
  */
-public class BlockGratedHopper extends BlockBase implements GUIBase
+public class BlockGratedHopper extends BlockBase implements GUIHolder
 {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", (@Nullable EnumFacing face) -> face != EnumFacing.UP);
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
@@ -186,14 +187,14 @@ public class BlockGratedHopper extends BlockBase implements GUIBase
     }
     
     @Override
-    public Class<ContainerGratedHopper> getContainerClass()
+    public ContainerGratedHopper getServerGUI(EntityPlayer player, World world, BlockPos pos)
     {
-        return ContainerGratedHopper.class;
+        return new ContainerGratedHopper((TileGratedHopper) world.getTileEntity(pos), player.inventory);
     }
     
     @Override
-    public Class<GUIGratedHopper> getGUIClass()
+    public GUIGratedHopper getClientGUI(EntityPlayer player, World world, BlockPos pos)
     {
-        return GUIGratedHopper.class;
+        return new GUIGratedHopper(getServerGUI(player, world, pos));
     }
 }

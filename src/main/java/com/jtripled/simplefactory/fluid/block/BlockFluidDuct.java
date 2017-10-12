@@ -1,24 +1,26 @@
 package com.jtripled.simplefactory.fluid.block;
 
 import com.jtripled.simplefactory.fluid.gui.GUIFluidDuct;
-import com.jtripled.simplefactory.fluid.inventory.ContainerFluidDuct;
+import com.jtripled.simplefactory.fluid.container.ContainerFluidDuct;
 import com.jtripled.simplefactory.fluid.tile.TileFluidDuct;
 import com.jtripled.voxen.block.BlockDuct;
-import com.jtripled.voxen.gui.GUIBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import com.jtripled.voxen.gui.GUIHolder;
 
 /**
  *
  * @author jtripled
  */
-public class BlockFluidDuct extends BlockDuct implements GUIBase
+public class BlockFluidDuct extends BlockDuct implements GUIHolder
 {
     public BlockFluidDuct()
     {
@@ -34,15 +36,15 @@ public class BlockFluidDuct extends BlockDuct implements GUIBase
     }
     
     @Override
-    public Class<ContainerFluidDuct> getContainerClass()
+    public ContainerFluidDuct getServerGUI(EntityPlayer player, World world, BlockPos pos)
     {
-        return ContainerFluidDuct.class;
+        return new ContainerFluidDuct((TileFluidDuct) world.getTileEntity(pos), player.inventory);
     }
     
     @Override
-    public Class<GUIFluidDuct> getGUIClass()
+    public GUIFluidDuct getClientGUI(EntityPlayer player, World world, BlockPos pos)
     {
-        return GUIFluidDuct.class;
+        return new GUIFluidDuct(getServerGUI(player, world, pos));
     }
 
     @Override

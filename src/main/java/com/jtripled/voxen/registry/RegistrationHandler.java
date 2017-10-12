@@ -1,7 +1,6 @@
 package com.jtripled.voxen.registry;
 
 import com.jtripled.voxen.entity.EntityBase;
-import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBase;
 import com.jtripled.voxen.mod.VoxenMod;
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistry;
 import com.jtripled.voxen.block.IBlockBase;
+import com.jtripled.voxen.gui.GUIHolder;
 
 /**
  *
@@ -116,7 +116,7 @@ public class RegistrationHandler implements IGuiHandler
      * GUI registration hooks.
      */
     
-    private static final Map<Integer, GUIBase> GUIS = new HashMap<>();
+    private static final Map<Integer, GUIHolder> GUIS = new HashMap<>();
     private static int GUI_ID = 0;
     private static int MESSAGE_ID = 0;
     
@@ -127,9 +127,9 @@ public class RegistrationHandler implements IGuiHandler
         return next;
     }
     
-    public void registerGUI(GUIBase element)
+    public void registerGUI(GUIHolder element)
     {
-        GUIBase holder = (GUIBase) element;
+        GUIHolder holder = (GUIHolder) element;
         GUIS.put(holder.getGUIID(), holder);
     }
     

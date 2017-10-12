@@ -1,4 +1,4 @@
-package com.jtripled.voxen.inventory;
+package com.jtripled.voxen.container;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -12,13 +12,13 @@ import net.minecraft.item.ItemStack;
  */
 public class ContainerBase extends Container
 {
-    public ContainerBase(int rows, InventoryPlayer inventory)
+    public ContainerBase(float rows, InventoryPlayer inventory)
     {
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 9; j++)
-                addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 32 + rows * 18 + i * 18));
+                addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 32 + (int) (rows * 18) + i * 18));
         for (int k = 0; k < 9; k++)
-            addSlotToContainer(new Slot(inventory, k, 8 + k * 18, 90 + rows * 18));
+            addSlotToContainer(new Slot(inventory, k, 8 + k * 18, 90 + (int) (rows * 18)));
     }
     
     @Override

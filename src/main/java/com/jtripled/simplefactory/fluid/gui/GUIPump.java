@@ -1,19 +1,16 @@
 package com.jtripled.simplefactory.fluid.gui;
 
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.fluid.inventory.ContainerPump;
-import com.jtripled.simplefactory.fluid.tile.TilePump;
+import com.jtripled.simplefactory.fluid.container.ContainerPump;
+import com.jtripled.voxen.gui.GUIContainerTile;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -24,34 +21,25 @@ import net.minecraftforge.fluids.FluidTank;
  *
  * @author jtripled
  */
-public class GUIPump extends GuiContainer
+public class GUIPump extends GUIContainerTile<ContainerPump>
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(SimpleFactory.ID, "textures/gui/pump.png");
     
-    private final TilePump tile;
-    private final Container container;
-    private final String name;
+    private final FluidTank tank;
     
-    public GUIPump(Container container)
+    public GUIPump(ContainerPump container)
     {
         super(container);
-        this.tile = ((ContainerPump) container).getTile();
-        this.container = container;
-        this.name = SimpleFactory.PROXY.localize(tile.getBlockType().getUnlocalizedName() + ".name");
+        this.tank = container.getTile().getInternalTank();
         this.ySize = 150;
     }
     
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+    public void drawForeground(int mouseX, int mouseY, int x, int y)
     {
-        fontRenderer.drawString("Inventory", 8, ySize - 93, 0x404040);
-        fontRenderer.drawString(name, 8, 6, 0x404040);
-        int x = (width - xSize) / 2;
-        int y = (height - ySize) / 2;
         if (mouseX > x + 14 && mouseX < x + 161 && mouseY > y + 20 && mouseY < y + 32)
         {
             List<String> tooltip = new ArrayList<>();
-            FluidTank tank = tile.getInternalTank();
             FluidStack fluid = tank.getFluid();
             if (fluid == null)
             {
@@ -72,19 +60,10 @@ public class GUIPump extends GuiContainer
             drawHoveringText(tooltip, mouseX - xSize, mouseY - ySize / 2);
         }
     }
-
+    
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
+    public void drawBackground(float ticks, int mouseX, int mouseY, int x, int y)
     {
-        drawDefaultBackground();
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-        mc.getTextureManager().bindTexture(TEXTURE);
-        int x = (width - xSize) / 2;
-        int y = (height - ySize) / 2;
-        drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
-        int progress = (int) Math.ceil(22 * (25f - (float) tile.getBucketCooldown()) / 25);
-        drawTexturedModalRect(x + 77, y + 37, xSize, 0, progress, 16);
-        FluidTank tank = tile.getInternalTank();
         FluidStack fluid = tank.getFluid();
         if (fluid != null)
         {
@@ -112,5 +91,11 @@ public class GUIPump extends GuiContainer
         }
         mc.getTextureManager().bindTexture(TEXTURE);
         drawTexturedModalRect(x + 17, y + 23, 0, 250, 141, 6);
+    }
+
+    @Override
+    public ResourceLocation getTexture()
+    {
+        return TEXTURE;
     }
 }

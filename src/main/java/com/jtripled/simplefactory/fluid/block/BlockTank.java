@@ -1,14 +1,13 @@
 package com.jtripled.simplefactory.fluid.block;
 
 import com.jtripled.simplefactory.SimpleFactory;
-import com.jtripled.simplefactory.fluid.inventory.ContainerTank;
+import com.jtripled.simplefactory.fluid.container.ContainerTank;
 import com.jtripled.simplefactory.fluid.gui.GUITank;
 import com.jtripled.simplefactory.fluid.render.TESRTank;
 import com.jtripled.simplefactory.fluid.tile.TileTank;
 import com.jtripled.simplefactory.fluid.network.FluidMessage;
 import com.jtripled.simplefactory.fluid.network.TankResizeMessage;
 import com.jtripled.voxen.block.BlockBase;
-import com.jtripled.voxen.gui.GUIBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -27,12 +26,13 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import com.jtripled.voxen.gui.GUIHolder;
 
 /**
  *
  * @author jtripled
  */
-public class BlockTank extends BlockBase implements GUIBase
+public class BlockTank extends BlockBase implements GUIHolder
 {
     public static final PropertyBool UP = PropertyBool.create("up");
     public static final PropertyBool DOWN = PropertyBool.create("down");
@@ -48,18 +48,6 @@ public class BlockTank extends BlockBase implements GUIBase
     /*
      * Block rendering and behaviour.
      */
-    
-    @Override
-    public Class<ContainerTank> getContainerClass()
-    {
-        return ContainerTank.class;
-    }
-    
-    @Override
-    public Class<GUITank> getGUIClass()
-    {
-        return GUITank.class;
-    }
     
     @Override
     public boolean isOpaqueCube(IBlockState state)
@@ -123,6 +111,18 @@ public class BlockTank extends BlockBase implements GUIBase
     public Class<? extends TileEntity> getTileClass()
     {
         return TileTank.class;
+    }
+    
+    @Override
+    public ContainerTank getServerGUI(EntityPlayer player, World world, BlockPos pos)
+    {
+        return new ContainerTank((TileTank) world.getTileEntity(pos), player.inventory);
+    }
+    
+    @Override
+    public GUITank getClientGUI(EntityPlayer player, World world, BlockPos pos)
+    {
+        return new GUITank(getServerGUI(player, world, pos));
     }
     
     @Override

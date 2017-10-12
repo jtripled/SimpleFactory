@@ -1,6 +1,5 @@
 package com.jtripled.voxen.block;
 
-import com.jtripled.voxen.gui.GUIBase;
 import com.jtripled.voxen.item.ItemBase;
 import com.jtripled.voxen.item.ItemBlockBase;
 import com.jtripled.voxen.mod.VoxenMod;
@@ -18,6 +17,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import com.jtripled.voxen.gui.GUIHolder;
 
 /**
  *
@@ -40,7 +40,7 @@ public class BlockBase extends Block implements IBlockBase
         this.name = name;
         this.setUnlocalizedName(name);
         this.setRegistryName(new ResourceLocation(VoxenMod.ID, name));
-        if (this instanceof GUIBase)
+        if (this instanceof GUIHolder)
         {
             guiID = RegistrationHandler.nextGUIID();
         }
@@ -51,8 +51,8 @@ public class BlockBase extends Block implements IBlockBase
     {
         if (!world.isRemote)
         {
-            if (this instanceof GUIBase)
-                ((GUIBase) this).openGUI(player, world, pos.getX(), pos.getY(), pos.getZ());
+            if (this instanceof GUIHolder)
+                ((GUIHolder) this).openGUI(player, world, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
     }

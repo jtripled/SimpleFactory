@@ -1,27 +1,21 @@
-package com.jtripled.simplefactory.fluid.inventory;
+package com.jtripled.simplefactory.fluid.container;
 
 import com.jtripled.simplefactory.fluid.tile.TilePump;
-import com.jtripled.voxen.inventory.ContainerBase;
-import net.minecraft.entity.player.EntityPlayer;
+import com.jtripled.voxen.container.ContainerTile;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.SlotItemHandler;
 
 /**
  *
  * @author jtripled
  */
-public class ContainerPump extends ContainerBase
+public class ContainerPump extends ContainerTile<TilePump>
 {
-    protected final TilePump tile;
-    
-    public ContainerPump(TileEntity tile, InventoryPlayer inventory)
+    public ContainerPump(TilePump tile, InventoryPlayer inventory)
     {
-        super(2, inventory);
-        this.tile = (TilePump) tile;
-        addSlotToContainer(new SlotItemHandler(this.tile.getBucketInput(), 0, 55, 36)
+        super(2, inventory, tile);
+        addSlotToContainer(new SlotItemHandler(getTile().getBucketInput(), 0, 55, 36)
         {
             @Override
             public void onSlotChanged()
@@ -29,7 +23,7 @@ public class ContainerPump extends ContainerBase
                 tile.markDirty();
             }
         });
-        addSlotToContainer(new SlotItemHandler(this.tile.getBucketOutput(), 0, 105, 36)
+        addSlotToContainer(new SlotItemHandler(getTile().getBucketOutput(), 0, 105, 36)
         {
             @Override
             public void onSlotChanged()
@@ -43,10 +37,5 @@ public class ContainerPump extends ContainerBase
                 return false;
             }
         });
-    }
-    
-    public TilePump getTile()
-    {
-        return tile;
     }
 }

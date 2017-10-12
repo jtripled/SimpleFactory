@@ -1,10 +1,9 @@
 package com.jtripled.simplefactory.fluid.block;
 
-import com.jtripled.simplefactory.fluid.inventory.ContainerPump;
+import com.jtripled.simplefactory.fluid.container.ContainerPump;
 import com.jtripled.simplefactory.fluid.gui.GUIPump;
 import com.jtripled.simplefactory.fluid.tile.TilePump;
 import com.jtripled.voxen.block.BlockBase;
-import com.jtripled.voxen.gui.GUIBase;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -15,6 +14,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -23,12 +23,13 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import com.jtripled.voxen.gui.GUIHolder;
 
 /**
  *
  * @author jtripled
  */
-public class BlockPump extends BlockBase implements GUIBase
+public class BlockPump extends BlockBase implements GUIHolder
 {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", (@Nullable EnumFacing face) -> face != EnumFacing.UP);
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
@@ -39,18 +40,6 @@ public class BlockPump extends BlockBase implements GUIBase
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setItem();
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, true));
-    }
-    
-    @Override
-    public Class<ContainerPump> getContainerClass()
-    {
-        return ContainerPump.class;
-    }
-    
-    @Override
-    public Class<GUIPump> getGUIClass()
-    {
-        return GUIPump.class;
     }
     
     @Override
@@ -139,6 +128,18 @@ public class BlockPump extends BlockBase implements GUIBase
     public Class<? extends TileEntity> getTileClass()
     {
         return TilePump.class;
+    }
+    
+    @Override
+    public ContainerPump getServerGUI(EntityPlayer player, World world, BlockPos pos)
+    {
+        return new ContainerPump((TilePump) world.getTileEntity(pos), player.inventory);
+    }
+    
+    @Override
+    public GUIPump getClientGUI(EntityPlayer player, World world, BlockPos pos)
+    {
+        return new GUIPump(getServerGUI(player, world, pos));
     }
     
     @Override
