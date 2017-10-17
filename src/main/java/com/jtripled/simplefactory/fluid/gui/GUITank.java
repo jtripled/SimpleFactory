@@ -69,7 +69,7 @@ public class GUITank extends GUIContainerTile<ContainerTank>
         if (fluid != null)
         {
             TextureAtlasSprite texture = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(fluid.getFluid().getStill().toString());
-            int fill = (int) Math.ceil(141 * (float) tank.getFluidAmount() / tank.getCapacity());
+            int fill = (int) Math.ceil(143 * (float) tank.getFluidAmount() / tank.getCapacity());
             int offset = 0;
             mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             Tessellator tessellator = Tessellator.getInstance();
@@ -77,7 +77,7 @@ public class GUITank extends GUIContainerTile<ContainerTank>
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
             while (fill > 0)
             {
-                int xCoord = x + 17 + offset;
+                int xCoord = x + 16 + offset;
                 int widthIn = fill >= 16 ? 16 : fill;
                 int yCoord = y + 23;
                 int heightIn = 6;

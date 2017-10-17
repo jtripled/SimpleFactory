@@ -68,7 +68,7 @@ public class GUIPump extends GUIContainerTile<ContainerPump>
         if (fluid != null)
         {
             TextureAtlasSprite texture = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(fluid.getFluid().getStill().toString());
-            int fill = (int) Math.ceil(141 * (float) tank.getFluidAmount() / tank.getCapacity());
+            int fill = (int) Math.ceil(143 * (float) tank.getFluidAmount() / tank.getCapacity());
             int offset = 0;
             mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             Tessellator tessellator = Tessellator.getInstance();
@@ -76,7 +76,7 @@ public class GUIPump extends GUIContainerTile<ContainerPump>
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
             while (fill > 0)
             {
-                int xCoord = x + 17 + offset;
+                int xCoord = x + 16 + offset;
                 int widthIn = fill >= 16 ? 16 : fill;
                 int yCoord = y + 23;
                 int heightIn = 6;
@@ -90,6 +90,8 @@ public class GUIPump extends GUIContainerTile<ContainerPump>
             tessellator.draw();
         }
         mc.getTextureManager().bindTexture(TEXTURE);
+        int progress = 22 - (int) Math.ceil(22 * (float) this.getContainer().getTile().getBucketCooldown() / 25);
+        drawTexturedModalRect(x + 77, y + 37, 176, 0, progress, 16);
         drawTexturedModalRect(x + 17, y + 23, 0, 250, 141, 6);
     }
 
